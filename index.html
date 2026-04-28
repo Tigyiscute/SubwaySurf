@@ -3,106 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Terminal - BJ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Subway Runner - Beijing Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <style>
         :root { --y: #FFD700; --bg: #111; }
-        body { margin: 0; background: var(--bg); color: var(--y); font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
-        
-        header { width: 100%; padding: 15px 0; text-align: center; background: #1a1a1a; border-bottom: 3px solid var(--y); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        h1 { font-family: 'Bungee', cursive; margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
-
-        .game-wrapper {
-            position: relative;
-            width: 95vw;
-            max-width: 1000px;
-            aspect-ratio: 16 / 9;
-            margin-top: 25px;
-            background: #000;
-            border-radius: 12px;
-            border: 3px solid #333;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-        }
-
+        body { margin: 0; background: var(--bg); color: var(--y); font-family: 'Bungee', cursive; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        header { width: 100%; padding: 20px; text-align: center; border-bottom: 3px solid var(--y); background: #1a1a1a; }
+        .container { width: 95%; max-width: 1000px; margin-top: 30px; }
+        .game-box { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; border: 3px solid #333; }
         iframe { width: 100%; height: 100%; border: none; display: none; }
-
-        .overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(45deg, #1a1a1a, #000);
-            z-index: 10;
-        }
-
-        .play-btn {
-            background: var(--y);
-            border: none;
-            padding: 15px 50px;
-            font-family: 'Bungee';
-            font-size: 1.6rem;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #b89b00;
-            transition: 0.1s;
-        }
-
+        .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; z-index: 5; }
+        .play-btn { background: var(--y); border: none; padding: 20px 60px; font-family: 'Bungee'; font-size: 1.8rem; cursor: pointer; border-radius: 10px; box-shadow: 0 6px 0 #b89b00; transition: 0.1s; }
         .play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b89b00; }
-
-        .fs-container { margin-top: 15px; display: none; }
-        .fs-btn { background: #333; color: #fff; border: 1px solid #555; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .controls { margin-top: 15px; display: none; }
+        .fs-btn { background: #333; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <header><h1>SUBWAY RUNNER</h1></header>
+    <header>SUBWAY RUNNER: BEIJING</header>
 
-    <div class="game-wrapper" id="gameArea">
-        <div class="overlay" id="preloader">
-            <button class="play-btn" onclick="boot()">LAUNCH</button>
-            <p style="margin-top: 15px; font-size: 0.8rem; color: #888;">Beijing Edition - Unlocked</p>
+    <div class="container">
+        <div class="game-box" id="gameArea">
+            <div class="overlay" id="preloader">
+                <button class="play-btn" onclick="bypassLaunch()">PLAY NOW</button>
+            </div>
+            <iframe id="gameFrame" allowfullscreen allow="autoplay; fullscreen; keyboard-map"></iframe>
         </div>
-        
-        <iframe id="gameFrame" src="" allowfullscreen allow="autoplay; fullscreen; keyboard-map"></iframe>
-    </div>
 
-    <div class="fs-container" id="controls">
-        <button class="fs-btn" onclick="toggleFS()">FULLSCREEN (F)</button>
+        <center>
+            <div class="controls" id="ui">
+                <button class="fs-btn" onclick="goFull()">FULLSCREEN</button>
+            </div>
+        </center>
     </div>
 
     <script>
-        function boot() {
+        function bypassLaunch() {
             const frame = document.getElementById('gameFrame');
             const loader = document.getElementById('preloader');
-            const ctrl = document.getElementById('controls');
+            const ui = document.getElementById('ui');
 
-            // This URL bypasses Vercel and uses GitHub's own hosting
-            frame.src = "https://subwaysurfersgame.github.io/beijing/";
+            // BYPASS LOGIC: Instead of a direct Vercel link, we use a proxy link.
+            // If the Vercel link is the ONLY one blocked, we use a mirrored 
+            // version of that same site hosted on a different platform.
             
+            const gameUrl = "https://subwaysurfersgame.github.io/beijing/";
+            
+            frame.src = gameUrl;
             frame.style.display = "block";
             loader.style.display = "none";
-            ctrl.style.display = "block";
+            ui.style.display = "block";
         }
 
-        function toggleFS() {
+        function goFull() {
             const area = document.getElementById('gameArea');
-            if (!document.fullscreenElement) {
-                area.requestFullscreen().catch(err => {
-                    // Fallback for some school browsers
-                    window.open(document.getElementById('gameFrame').src, '_blank');
-                });
-            } else {
-                document.exitFullscreen();
-            }
+            if (area.requestFullscreen) area.requestFullscreen();
+            else if (area.webkitRequestFullscreen) area.webkitRequestFullscreen();
         }
-
-        // Hotkey: F for Fullscreen
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'f') toggleFS();
-        });
     </script>
 </body>
 </html>
