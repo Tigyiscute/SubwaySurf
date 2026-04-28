@@ -3,63 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Runner - Beijing Project</title>
+    <title>Academic Resource Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <style>
-        :root { --y: #FFD700; --bg: #111; }
-        body { margin: 0; background: var(--bg); color: var(--y); font-family: 'Bungee', cursive; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        header { width: 100%; padding: 20px; text-align: center; border-bottom: 3px solid var(--y); background: #1a1a1a; }
-        .container { width: 95%; max-width: 1000px; margin-top: 30px; }
-        .game-box { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; border: 3px solid #333; }
+        :root { --accent: #FFD700; --dark: #0f0f0f; }
+        body { margin: 0; background: var(--dark); color: var(--accent); font-family: 'Bungee', cursive; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+        header { width: 100%; padding: 20px; text-align: center; border-bottom: 2px solid var(--accent); background: #1a1a1a; }
+        .game-wrapper { position: relative; width: 90vw; max-width: 1000px; aspect-ratio: 16 / 9; margin-top: 30px; border: 3px solid #333; border-radius: 15px; overflow: hidden; background: #000; }
         iframe { width: 100%; height: 100%; border: none; display: none; }
-        .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; z-index: 5; }
-        .play-btn { background: var(--y); border: none; padding: 20px 60px; font-family: 'Bungee'; font-size: 1.8rem; cursor: pointer; border-radius: 10px; box-shadow: 0 6px 0 #b89b00; transition: 0.1s; }
-        .play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b89b00; }
+        .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 100%); z-index: 10; }
+        .play-btn { background: var(--accent); border: none; padding: 20px 60px; font-family: 'Bungee'; font-size: 1.8rem; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 0 #b89b00; transition: 0.1s; }
+        .play-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #b89b00; }
         .controls { margin-top: 15px; display: none; }
-        .fs-btn { background: #333; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; }
+        .fs-btn { background: #333; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-family: sans-serif; }
     </style>
 </head>
 <body>
 
     <header>SUBWAY RUNNER: BEIJING</header>
 
-    <div class="container">
-        <div class="game-box" id="gameArea">
-            <div class="overlay" id="preloader">
-                <button class="play-btn" onclick="bypassLaunch()">PLAY NOW</button>
-            </div>
-            <iframe id="gameFrame" allowfullscreen allow="autoplay; fullscreen; keyboard-map"></iframe>
+    <div class="game-wrapper" id="display">
+        <div class="overlay" id="pre">
+            <button class="play-btn" onclick="startApp()">LAUNCH RUN</button>
+            <p style="color: white; font-family: sans-serif; margin-top: 10px; font-size: 0.8rem;">Beijing Edition - Unlocked</p>
         </div>
+        <iframe id="target" allowfullscreen allow="autoplay; fullscreen; keyboard-map"></iframe>
+    </div>
 
-        <center>
-            <div class="controls" id="ui">
-                <button class="fs-btn" onclick="goFull()">FULLSCREEN</button>
-            </div>
-        </center>
+    <div class="controls" id="ui">
+        <button class="fs-btn" onclick="goFull()">FULLSCREEN</button>
     </div>
 
     <script>
-        function bypassLaunch() {
-            const frame = document.getElementById('gameFrame');
-            const loader = document.getElementById('preloader');
+        function startApp() {
+            const frame = document.getElementById('target');
+            const pre = document.getElementById('pre');
             const ui = document.getElementById('ui');
 
-            // BYPASS LOGIC: Instead of a direct Vercel link, we use a proxy link.
-            // If the Vercel link is the ONLY one blocked, we use a mirrored 
-            // version of that same site hosted on a different platform.
+            // BYPASS METHOD: We use a "Redirector" link. 
+            // This link doesn't look like Vercel to your school's filter.
+            // It fetches the data from the Vercel link you provided and streams it here.
+            const proxyUrl = "https://api.codetabs.com/v1/proxy/?quest=";
+            const targetUrl = "https://surfmap-run.vercel.app/beijing";
             
-            const gameUrl = "https://subwaysurfersgame.github.io/beijing/";
+            frame.src = proxyUrl + encodeURIComponent(targetUrl);
             
-            frame.src = gameUrl;
             frame.style.display = "block";
-            loader.style.display = "none";
+            pre.style.display = "none";
             ui.style.display = "block";
         }
 
         function goFull() {
-            const area = document.getElementById('gameArea');
-            if (area.requestFullscreen) area.requestFullscreen();
-            else if (area.webkitRequestFullscreen) area.webkitRequestFullscreen();
+            const el = document.getElementById('display');
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
         }
     </script>
 </body>
