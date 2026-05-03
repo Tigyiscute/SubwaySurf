@@ -3,57 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educational Portal - Beijing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <title>Subway Surfers | Zurich</title>
     <style>
-        :root { --y: #FFD700; --bg: #000; }
-        body { margin: 0; background: var(--bg); color: var(--y); font-family: 'Bungee', cursive; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
-        header { width: 100%; padding: 15px; text-align: center; border-bottom: 2px solid var(--y); background: #111; }
-        .game-area { position: relative; width: 95vw; height: 75vh; margin-top: 20px; border: 2px solid #333; border-radius: 10px; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; display: none; }
-        .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; z-index: 5; }
-        .play-btn { background: var(--y); border: none; padding: 15px 45px; font-family: 'Bungee'; font-size: 1.4rem; cursor: pointer; border-radius: 5px; box-shadow: 0 5px 0 #b89b00; }
-        .play-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b89b00; }
-        .fs-btn { margin-top: 15px; background: #222; color: #fff; border: 1px solid #444; padding: 10px 25px; cursor: pointer; border-radius: 5px; font-family: sans-serif; }
+        /* Modern Gaming Aesthetic */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b0b0b;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            color: #ffcc00;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        /* The Game Box */
+        #gameContainer {
+            position: relative;
+            width: 90%;
+            max-width: 1100px;
+            height: 70vh;
+            background: #000;
+            border: 4px solid #333;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Fullscreen Button Styling */
+        .ui-area {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #fullscreen-btn {
+            padding: 15px 35px;
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #000;
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 #b38f00;
+        }
+
+        #fullscreen-btn:hover {
+            background-color: #ffe066;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #b38f00;
+        }
+
+        #fullscreen-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b38f00;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Fullscreen specific behavior */
+        #gameContainer:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            border-radius: 0;
+        }
     </style>
 </head>
 <body>
 
-    <header>SUBWAY RUNNER: BEIJING</header>
+    <header>
+        <h1>Subway Surfers | Zurich</h1>
+    </header>
 
-    <div class="game-area" id="box">
-        <div class="overlay" id="pre">
-            <button class="play-btn" onclick="hardBypass()">BOOT SYSTEM</button>
-            <p style="margin-top: 10px; font-family: sans-serif; font-size: 0.8rem; color: #666;">(Local Injection Mode)</p>
-        </div>
-        <iframe id="game" allowfullscreen allow="autoplay; fullscreen; keyboard-map"></iframe>
+    <!-- Wrap the iframe in a container for better fullscreen control -->
+    <div id="gameContainer">
+        <iframe 
+            id="subwayFrame"
+            src="https://ss.randomkzn.com/zurich?mode=original" 
+            allow="fullscreen"
+            title="Subway Surfers Zurich Edition">
+        </iframe>
     </div>
 
-    <button class="fs-btn" onclick="full()">FULLSCREEN</button>
+    <div class="ui-area">
+        <button id="fullscreen-btn">✨ Play Fullscreen</button>
+        <div class="hint">Use Arrow Keys to Jump, Roll, and Dodge!</div>
+    </div>
 
     <script>
-        function hardBypass() {
-            const frame = document.getElementById('game');
-            const pre = document.getElementById('pre');
-            
-            // This is the Vercel link encoded so the firewall can't read it
-            const target = "https://surfmap-run.vercel.app/beijing";
-            
-            // We use a Google Proxy to wrap the Vercel traffic.
-            // Schools rarely block Google's internal gadget proxy.
-            const proxy = "https://images-opensocial.googleusercontent.com/gadgets/proxy?container=ig&url=";
-            
-            frame.src = proxy + encodeURIComponent(target);
-            
-            frame.style.display = "block";
-            pre.style.display = "none";
-        }
+        const container = document.getElementById('gameContainer');
+        const btn = document.getElementById('fullscreen-btn');
 
-        function full() {
-            const el = document.getElementById('box');
-            if (el.requestFullscreen) el.requestFullscreen();
-            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-        }
+        btn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                // Open Fullscreen
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) { /* Safari */
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) { /* IE11 */
+                    container.msRequestFullscreen();
+                }
+                btn.textContent = "Exit Fullscreen";
+            } else {
+                // Exit Fullscreen
+                document.exitFullscreen();
+                btn.textContent = "✨ Play Fullscreen";
+            }
+        });
+
+        // Listen for the 'Esc' key to update button text
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                btn.textContent = "✨ Play Fullscreen";
+            }
+        });
     </script>
+
 </body>
 </html>
