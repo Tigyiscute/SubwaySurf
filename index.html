@@ -3,112 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Tiger Mod</title>
+    <title>Subway Surfers - Tiger Swipe Mod</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-            font-family: sans-serif;
-        }
-
-        /* The Game Container */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+        
         iframe {
             width: 100vw;
             height: 100vh;
             border: none;
         }
 
-        /* Glass Circle Button */
+        /* Glass Tiger Button */
         #tiger-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 0, 0, 0.4); /* Starts Red */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 70, 70, 0.4); /* Red tint */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 45px;
             cursor: pointer;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: all 0.3s ease;
-            user-select: none;
-            z-index: 999;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
-        #tiger-btn.active {
-            background: rgba(0, 255, 0, 0.6); /* Green when on */
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-            transform: scale(1.1);
+        #tiger-btn.enabled {
+            background: rgba(70, 255, 70, 0.6); /* Green tint */
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+            transform: translateX(-50%) scale(1.1);
         }
 
-        #status-text {
+        .label {
             position: fixed;
-            bottom: 120px;
-            right: 25px;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
             color: white;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            pointer-events: none;
+            font-family: 'Segoe UI', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
     </style>
 </head>
 <body>
 
-    <!-- The Game -->
-    <iframe id="game-frame" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
-
-    <!-- The Controller -->
-    <div id="status-text">Tiger Mod: OFF</div>
+    <div class="label" id="status">System Standby</div>
     <div id="tiger-btn">🐯</div>
+    
+    <iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
     <script>
         const btn = document.getElementById('tiger-btn');
-        const status = document.getElementById('status-text');
-        const game = document.getElementById('game-frame');
-        let spammer = null;
-        let isOn = false;
+        const status = document.getElementById('status');
+        const gameFrame = document.getElementById('game');
+        let active = false;
+        let loop = null;
 
-        // Function to simulate the key press
-        function sendKey(key) {
-            const event = new KeyboardEvent('keydown', {
-                key: key,
-                code: `Key${key.toUpperCase()}`,
+        // Function to simulate a swipe event
+        function simulateSwipe(direction) {
+            const win = gameFrame.contentWindow;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const offset = direction === 'left' ? -200 : 200;
+
+            // Step 1: Pointer Down (Start of swipe)
+            const startEvent = new PointerEvent('pointerdown', {
+                clientX: centerX,
+                clientY: centerY,
                 bubbles: true
             });
-            // Attempting to dispatch to the game window
-            game.contentWindow.postMessage({type: 'keypress', key: key}, '*'); 
-            document.dispatchEvent(event);
+
+            // Step 2: Pointer Move (The actual swipe)
+            const moveEvent = new PointerEvent('pointermove', {
+                clientX: centerX + offset,
+                clientY: centerY,
+                bubbles: true
+            });
+
+            // Step 3: Pointer Up (End of swipe)
+            const endEvent = new PointerEvent('pointerup', {
+                clientX: centerX + offset,
+                clientY: centerY,
+                bubbles: true
+            });
+
+            // Dispatching to the iframe
+            gameFrame.dispatchEvent(startEvent);
+            gameFrame.dispatchEvent(moveEvent);
+            gameFrame.dispatchEvent(endEvent);
         }
 
         btn.addEventListener('click', () => {
-            isOn = !isOn;
+            active = !active;
             
-            if (isOn) {
-                btn.classList.add('active');
-                status.innerText = "Tiger Mod: ON (Spamming W/D)";
-                
-                // 250 keys per second = 4ms interval
-                spammer = setInterval(() => {
-                    sendKey('w');
-                    sendKey('d');
-                }, 4); 
+            if (active) {
+                btn.classList.add('enabled');
+                status.innerText = "Tiger Mode: Active";
+                status.style.color = "#46ff46";
+
+                // Rapidly alternate between Left and Right swipes
+                loop = setInterval(() => {
+                    simulateSwipe('left');
+                    setTimeout(() => simulateSwipe('right'), 2); // Micro-delay to separate them
+                }, 4); // ~250 cycles per second
 
             } else {
-                btn.classList.remove('active');
-                status.innerText = "Tiger Mod: OFF";
-                clearInterval(spammer);
+                btn.classList.remove('enabled');
+                status.innerText = "System Standby";
+                status.style.color = "white";
+                clearInterval(loop);
             }
         });
     </script>
