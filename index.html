@@ -1,94 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Subway Surfers - Tiger Q-Toggle</title>
+    <title>Subway Surfers - Arrow Spam</title>
     <style>
-        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
         iframe { width: 100%; height: 100%; border: none; }
         
         #tiger {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
-            background: #ff4444; /* Red */
-            border: 4px solid rgba(255,255,255,0.3);
-            cursor: pointer;
+            background: rgba(255, 50, 50, 0.4); /* Glass Red */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 45px;
+            cursor: pointer;
             z-index: 9999;
-            transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             user-select: none;
         }
 
         #tiger.enabled {
-            background: #44ff44; /* Green */
-            box-shadow: 0 0 25px #44ff44;
+            background: rgba(50, 255, 50, 0.6); /* Glass Green */
+            box-shadow: 0 0 30px rgba(50, 255, 50, 0.4);
             transform: scale(1.1);
         }
 
-        #hint {
+        #status-bar {
             position: fixed;
-            bottom: 120px;
+            bottom: 130px;
             right: 30px;
             color: white;
             background: rgba(0,0,0,0.7);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
             pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
         }
     </style>
 </head>
 <body>
 
-<div id="hint">Press <b>Q</b> or Click Tiger</div>
+<div id="status-bar">PRESS [Q] TO TOGGLE</div>
 <div id="tiger">🐯</div>
 <iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
 <script>
     const tiger = document.getElementById('tiger');
+    const statusBar = document.getElementById('status-bar');
     let active = false;
     let timer = null;
 
-    function send(k) {
+    // Standard arrow key simulation
+    function sendArrow(dir) {
+        const code = dir === 'left' ? 'ArrowLeft' : 'ArrowRight';
         const e = new KeyboardEvent('keydown', {
-            key: k,
-            keyCode: k === 'w' ? 87 : 68,
-            code: k === 'w' ? 'KeyW' : 'KeyD',
-            which: k === 'w' ? 87 : 68,
+            key: code,
+            code: code,
+            keyCode: dir === 'left' ? 37 : 39,
+            which: dir === 'left' ? 37 : 39,
             bubbles: true
         });
         document.dispatchEvent(e);
         window.dispatchEvent(e);
-        // Dispatch to iframe just in case
-        const frame = document.getElementById('game');
-        frame.contentWindow.postMessage('trigger-input', '*'); 
     }
 
     function toggle() {
         active = !active;
         if (active) {
             tiger.classList.add('enabled');
+            statusBar.innerText = "TIGER ACTIVE: SPAMMING ARROWS";
+            statusBar.style.color = "#44ff44";
+            
+            // 4ms = ~250 keys per second
             timer = setInterval(() => {
-                send('w');
-                send('d');
-            }, 4); // 250 keys per second
+                sendArrow('left');
+                sendArrow('right');
+            }, 4);
         } else {
             tiger.classList.remove('enabled');
+            statusBar.innerText = "PRESS [Q] TO TOGGLE";
+            statusBar.style.color = "white";
             clearInterval(timer);
         }
     }
 
-    // Click trigger
+    // Toggle via Click
     tiger.onclick = toggle;
 
-    // "Q" Key trigger
+    // Toggle via "Q" Key
     window.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'q') {
             toggle();
