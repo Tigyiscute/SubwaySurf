@@ -3,147 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers | TAS Edition</title>
+    <title>Subway Surfers - Tiger Mod</title>
     <style>
-        :root {
-            --bg: #050505;
-            --glass: rgba(15, 15, 15, 0.9);
-            --blue: #0088ff; /* Your favorite color */
-            --text: #e0e0e0;
-        }
-
         body, html {
-            margin: 0; padding: 0;
-            height: 100%; width: 100%;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', -apple-system, sans-serif;
-            overflow: hidden;
-        }
-
-        /* Black Glass Header */
-        header {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 136, 255, 0.3);
-            z-index: 100;
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: var(--blue);
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 136, 255, 0.5);
-        }
-
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .speed-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.05);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-
-        input[type=range] {
-            cursor: pointer;
-            accent-color: var(--blue);
-        }
-
-        .btn {
-            background: transparent;
-            border: 1px solid var(--blue);
-            color: var(--blue);
-            padding: 7px 18px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn:hover {
-            background: var(--blue);
-            color: white;
-            box-shadow: 0 0 15px var(--blue);
-        }
-
-        /* Game Wrapper */
-        #container {
-            width: 100%;
-            height: calc(100vh - 60px);
-            background: #000;
-        }
-
-        iframe {
+            margin: 0;
+            padding: 0;
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: sans-serif;
+        }
+
+        /* The Game Container */
+        iframe {
+            width: 100vw;
+            height: 100vh;
             border: none;
+        }
+
+        /* Glass Circle Button */
+        #tiger-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 0, 0, 0.4); /* Starts Red */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+            user-select: none;
+            z-index: 999;
+        }
+
+        #tiger-btn.active {
+            background: rgba(0, 255, 0, 0.6); /* Green when on */
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: scale(1.1);
+        }
+
+        #status-text {
+            position: fixed;
+            bottom: 120px;
+            right: 25px;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Subway Surf TAS</div>
-        
-        <div class="controls">
-            <div class="speed-box">
-                <span>Speed: <b id="val">1.0</b>x</span>
-                <input type="range" id="slider" min="0.1" max="2.5" step="0.1" value="1">
-            </div>
-            <button class="btn" onclick="toggleFS()">FULLSCREEN</button>
-        </div>
-    </header>
+    <!-- The Game -->
+    <iframe id="game-frame" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
-    <div id="container">
-        <!-- The Game -->
-        <iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
-    </div>
+    <!-- The Controller -->
+    <div id="status-text">Tiger Mod: OFF</div>
+    <div id="tiger-btn">🐯</div>
 
     <script>
-        const game = document.getElementById('game');
-        const slider = document.getElementById('slider');
-        const speedText = document.getElementById('val');
+        const btn = document.getElementById('tiger-btn');
+        const status = document.getElementById('status-text');
+        const game = document.getElementById('game-frame');
+        let spammer = null;
+        let isOn = false;
 
-        // TASK: Inject Speed Control
-        // This attempts to bypass the origin restriction by talking to the video elements first
-        function updateSpeed(s) {
-            const speed = parseFloat(s);
-            speedText.innerText = speed.toFixed(1);
+        // Function to simulate the key press
+        function sendKey(key) {
+            const event = new KeyboardEvent('keydown', {
+                key: key,
+                code: `Key${key.toUpperCase()}`,
+                bubbles: true
+            });
+            // Attempting to dispatch to the game window
+            game.contentWindow.postMessage({type: 'keypress', key: key}, '*'); 
+            document.dispatchEvent(event);
+        }
+
+        btn.addEventListener('click', () => {
+            isOn = !isOn;
             
-            try {
-                // If the game uses HTML5 Video for animations (uncommon for SS but possible)
-                const videos = game.contentWindow.document.querySelectorAll('video');
-                videos.forEach(v => v.playbackRate = speed);
-            } catch(e) {
-                console.log("Standard speed hack blocked by CORS. Using fallback...");
+            if (isOn) {
+                btn.classList.add('active');
+                status.innerText = "Tiger Mod: ON (Spamming W/D)";
+                
+                // 250 keys per second = 4ms interval
+                spammer = setInterval(() => {
+                    sendKey('w');
+                    sendKey('d');
+                }, 4); 
+
+            } else {
+                btn.classList.remove('active');
+                status.innerText = "Tiger Mod: OFF";
+                clearInterval(spammer);
             }
-        }
-
-        slider.oninput = (e) => updateSpeed(e.target.value);
-
-        function toggleFS() {
-            const elem = document.getElementById('container');
-            if (elem.requestFullscreen) elem.requestFullscreen();
-            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-        }
-
-        // Auto-focus the game so you don't have to click it to start moving
-        window.onload = () => {
-            game.focus();
-        };
+        });
     </script>
 </body>
 </html>
