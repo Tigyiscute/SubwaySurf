@@ -2,127 +2,115 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Subway Surfers - Record & Speed</title>
+    <title>Subway Surfers - Keyboard Tiger</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
-        iframe { width: 100vw; height: 100vh; border: none; z-index: 1; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
 
+        /* Glass Circle Button */
         #tiger-btn {
             position: fixed;
-            bottom: 40px;
-            right: 40px;
-            width: 85px;
-            height: 85px;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: rgba(255, 50, 50, 0.4); /* Default Red */
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255, 0, 0, 0.4); /* Start Red */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             transition: 0.3s;
-            z-index: 9999;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
-        /* State Styles */
-        #tiger-btn.recording { background: rgba(255, 165, 0, 0.6); animation: pulse 1s infinite; }
-        #tiger-btn.active { background: rgba(50, 255, 50, 0.6); }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        #tiger-btn.active {
+            background: rgba(0, 255, 0, 0.6); /* Green when active */
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+            transform: scale(1.1);
         }
 
-        #hint {
+        #label {
             position: fixed;
-            bottom: 140px;
-            right: 40px;
+            bottom: 120px;
+            right: 30px;
             color: white;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
             pointer-events: none;
-            z-index: 9999;
         }
     </style>
 </head>
 <body>
 
-    <div id="hint">Status: Idle</div>
+    <div id="label">TIGER: OFF</div>
     <div id="tiger-btn">🐯</div>
-    <iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
+    <iframe id="game-frame" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
     <script>
         const btn = document.getElementById('tiger-btn');
-        const hint = document.getElementById('hint');
-        const game = document.getElementById('game');
+        const label = document.getElementById('label');
+        const game = document.getElementById('game-frame');
         
-        let state = 'idle'; // idle, recording, active
-        let recordedPath = [];
-        let playbackInterval = null;
+        let active = false;
+        let spamTimer = null;
 
-        // Capture movement during recording
-        window.addEventListener('mousedown', (e) => {
-            if (state === 'recording') {
-                recordedPath = [];
-                recordedPath.push({ x: e.clientX, y: e.clientY, type: 'pointerdown' });
-                
-                const moveHandler = (moveEv) => {
-                    recordedPath.push({ x: moveEv.clientX, y: moveEv.clientY, type: 'pointermove' });
-                };
-                
-                const upHandler = (upEv) => {
-                    recordedPath.push({ x: upEv.clientX, y: upEv.clientY, type: 'pointerup' });
-                    window.removeEventListener('mousemove', moveHandler);
-                    window.removeEventListener('mouseup', upHandler);
-                    hint.innerText = "Captured! Click Tiger to Start Spam";
-                };
+        // Function to create a keyboard event
+        function pressKey(keyCode, char) {
+            const eventData = {
+                key: char,
+                code: keyCode,
+                keyCode: char.toUpperCase().charCodeAt(0),
+                which: char.toUpperCase().charCodeAt(0),
+                bubbles: true,
+                cancelable: true
+            };
 
-                window.addEventListener('mousemove', moveHandler);
-                window.addEventListener('mouseup', upHandler);
-            }
-        });
+            const down = new KeyboardEvent('keydown', eventData);
+            const up = new KeyboardEvent('keyup', eventData);
 
-        function playBack() {
-            if (recordedPath.length === 0) return;
+            // Dispatch to both the main window and the game window
+            window.dispatchEvent(down);
+            game.contentWindow.dispatchEvent(down);
             
-            recordedPath.forEach((point) => {
-                const ev = new PointerEvent(point.type, {
-                    clientX: point.x,
-                    clientY: point.y,
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
-                });
-                // Send to the main document and try to proxy to iframe
-                document.dispatchEvent(ev);
-                game.contentWindow.dispatchEvent(ev); 
-            });
+            // Release immediately to allow the next spam cycle
+            setTimeout(() => {
+                window.dispatchEvent(up);
+                game.contentWindow.dispatchEvent(up);
+            }, 1);
         }
 
         btn.addEventListener('click', () => {
-            if (state === 'idle') {
-                state = 'recording';
-                btn.className = 'recording';
-                hint.innerText = "Action: Swipe ONCE on the game";
-            } 
-            else if (state === 'recording') {
-                state = 'active';
-                btn.className = 'active';
-                hint.innerText = "Tiger Mod: ACTIVE (Spamming)";
-                // Run at 250Hz (approx 4ms)
-                playbackInterval = setInterval(playBack, 4);
-            } 
-            else {
-                state = 'idle';
-                btn.className = '';
-                hint.innerText = "Status: Idle";
-                clearInterval(playbackInterval);
+            active = !active;
+
+            if (active) {
+                btn.classList.add('active');
+                label.innerText = "TIGER: SPAMMING";
+                label.style.color = "#00ff00";
+
+                // Interval set to 4ms (1000ms / 4 = 250 times per second)
+                spamTimer = setInterval(() => {
+                    pressKey('KeyW', 'w');
+                    pressKey('KeyD', 'd');
+                }, 4);
+
+            } else {
+                btn.classList.remove('active');
+                label.innerText = "TIGER: OFF";
+                label.style.color = "white";
+                clearInterval(spamTimer);
             }
         });
     </script>
