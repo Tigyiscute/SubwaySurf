@@ -1,118 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Subway Surfers - Keyboard Tiger</title>
+    <title>Subway Surfers - Tiger Q-Toggle</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+        iframe { width: 100%; height: 100%; border: none; }
         
-        iframe {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-        }
-
-        /* Glass Circle Button */
-        #tiger-btn {
+        #tiger {
             position: fixed;
             bottom: 30px;
             right: 30px;
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: rgba(255, 0, 0, 0.4); /* Start Red */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: #ff4444; /* Red */
+            border: 4px solid rgba(255,255,255,0.3);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            transition: 0.3s;
-            z-index: 1000;
+            z-index: 9999;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            user-select: none;
         }
 
-        #tiger-btn.active {
-            background: rgba(0, 255, 0, 0.6); /* Green when active */
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+        #tiger.enabled {
+            background: #44ff44; /* Green */
+            box-shadow: 0 0 25px #44ff44;
             transform: scale(1.1);
         }
 
-        #label {
+        #hint {
             position: fixed;
             bottom: 120px;
             right: 30px;
             color: white;
-            font-family: 'Courier New', Courier, monospace;
-            background: rgba(0,0,0,0.6);
-            padding: 5px 10px;
-            border-radius: 5px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
             pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <div id="label">TIGER: OFF</div>
-    <div id="tiger-btn">🐯</div>
-    <iframe id="game-frame" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
+<div id="hint">Press <b>Q</b> or Click Tiger</div>
+<div id="tiger">🐯</div>
+<iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
-    <script>
-        const btn = document.getElementById('tiger-btn');
-        const label = document.getElementById('label');
-        const game = document.getElementById('game-frame');
-        
-        let active = false;
-        let spamTimer = null;
+<script>
+    const tiger = document.getElementById('tiger');
+    let active = false;
+    let timer = null;
 
-        // Function to create a keyboard event
-        function pressKey(keyCode, char) {
-            const eventData = {
-                key: char,
-                code: keyCode,
-                keyCode: char.toUpperCase().charCodeAt(0),
-                which: char.toUpperCase().charCodeAt(0),
-                bubbles: true,
-                cancelable: true
-            };
-
-            const down = new KeyboardEvent('keydown', eventData);
-            const up = new KeyboardEvent('keyup', eventData);
-
-            // Dispatch to both the main window and the game window
-            window.dispatchEvent(down);
-            game.contentWindow.dispatchEvent(down);
-            
-            // Release immediately to allow the next spam cycle
-            setTimeout(() => {
-                window.dispatchEvent(up);
-                game.contentWindow.dispatchEvent(up);
-            }, 1);
-        }
-
-        btn.addEventListener('click', () => {
-            active = !active;
-
-            if (active) {
-                btn.classList.add('active');
-                label.innerText = "TIGER: SPAMMING";
-                label.style.color = "#00ff00";
-
-                // Interval set to 4ms (1000ms / 4 = 250 times per second)
-                spamTimer = setInterval(() => {
-                    pressKey('KeyW', 'w');
-                    pressKey('KeyD', 'd');
-                }, 4);
-
-            } else {
-                btn.classList.remove('active');
-                label.innerText = "TIGER: OFF";
-                label.style.color = "white";
-                clearInterval(spamTimer);
-            }
+    function send(k) {
+        const e = new KeyboardEvent('keydown', {
+            key: k,
+            keyCode: k === 'w' ? 87 : 68,
+            code: k === 'w' ? 'KeyW' : 'KeyD',
+            which: k === 'w' ? 87 : 68,
+            bubbles: true
         });
-    </script>
+        document.dispatchEvent(e);
+        window.dispatchEvent(e);
+        // Dispatch to iframe just in case
+        const frame = document.getElementById('game');
+        frame.contentWindow.postMessage('trigger-input', '*'); 
+    }
+
+    function toggle() {
+        active = !active;
+        if (active) {
+            tiger.classList.add('enabled');
+            timer = setInterval(() => {
+                send('w');
+                send('d');
+            }, 4); // 250 keys per second
+        } else {
+            tiger.classList.remove('enabled');
+            clearInterval(timer);
+        }
+    }
+
+    // Click trigger
+    tiger.onclick = toggle;
+
+    // "Q" Key trigger
+    window.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'q') {
+            toggle();
+        }
+    });
+</script>
+
 </body>
 </html>
