@@ -2,127 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Tiger Swipe Mod</title>
+    <title>Subway Surfers - Record & Speed</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
-        
-        iframe {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+        iframe { width: 100vw; height: 100vh; border: none; z-index: 1; }
 
-        /* Glass Tiger Button */
         #tiger-btn {
             position: fixed;
             bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90px;
-            height: 90px;
+            right: 40px;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
-            background: rgba(255, 70, 70, 0.4); /* Red tint */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 50, 50, 0.4); /* Default Red */
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 45px;
+            font-size: 40px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.3s;
+            z-index: 9999;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 1000;
         }
 
-        #tiger-btn.enabled {
-            background: rgba(70, 255, 70, 0.6); /* Green tint */
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
-            transform: translateX(-50%) scale(1.1);
+        /* State Styles */
+        #tiger-btn.recording { background: rgba(255, 165, 0, 0.6); animation: pulse 1s infinite; }
+        #tiger-btn.active { background: rgba(50, 255, 50, 0.6); }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        .label {
+        #hint {
             position: fixed;
             bottom: 140px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 40px;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 9999;
         }
     </style>
 </head>
 <body>
 
-    <div class="label" id="status">System Standby</div>
+    <div id="hint">Status: Idle</div>
     <div id="tiger-btn">🐯</div>
-    
     <iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
 
     <script>
         const btn = document.getElementById('tiger-btn');
-        const status = document.getElementById('status');
-        const gameFrame = document.getElementById('game');
-        let active = false;
-        let loop = null;
+        const hint = document.getElementById('hint');
+        const game = document.getElementById('game');
+        
+        let state = 'idle'; // idle, recording, active
+        let recordedPath = [];
+        let playbackInterval = null;
 
-        // Function to simulate a swipe event
-        function simulateSwipe(direction) {
-            const win = gameFrame.contentWindow;
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const offset = direction === 'left' ? -200 : 200;
+        // Capture movement during recording
+        window.addEventListener('mousedown', (e) => {
+            if (state === 'recording') {
+                recordedPath = [];
+                recordedPath.push({ x: e.clientX, y: e.clientY, type: 'pointerdown' });
+                
+                const moveHandler = (moveEv) => {
+                    recordedPath.push({ x: moveEv.clientX, y: moveEv.clientY, type: 'pointermove' });
+                };
+                
+                const upHandler = (upEv) => {
+                    recordedPath.push({ x: upEv.clientX, y: upEv.clientY, type: 'pointerup' });
+                    window.removeEventListener('mousemove', moveHandler);
+                    window.removeEventListener('mouseup', upHandler);
+                    hint.innerText = "Captured! Click Tiger to Start Spam";
+                };
 
-            // Step 1: Pointer Down (Start of swipe)
-            const startEvent = new PointerEvent('pointerdown', {
-                clientX: centerX,
-                clientY: centerY,
-                bubbles: true
+                window.addEventListener('mousemove', moveHandler);
+                window.addEventListener('mouseup', upHandler);
+            }
+        });
+
+        function playBack() {
+            if (recordedPath.length === 0) return;
+            
+            recordedPath.forEach((point) => {
+                const ev = new PointerEvent(point.type, {
+                    clientX: point.x,
+                    clientY: point.y,
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                // Send to the main document and try to proxy to iframe
+                document.dispatchEvent(ev);
+                game.contentWindow.dispatchEvent(ev); 
             });
-
-            // Step 2: Pointer Move (The actual swipe)
-            const moveEvent = new PointerEvent('pointermove', {
-                clientX: centerX + offset,
-                clientY: centerY,
-                bubbles: true
-            });
-
-            // Step 3: Pointer Up (End of swipe)
-            const endEvent = new PointerEvent('pointerup', {
-                clientX: centerX + offset,
-                clientY: centerY,
-                bubbles: true
-            });
-
-            // Dispatching to the iframe
-            gameFrame.dispatchEvent(startEvent);
-            gameFrame.dispatchEvent(moveEvent);
-            gameFrame.dispatchEvent(endEvent);
         }
 
         btn.addEventListener('click', () => {
-            active = !active;
-            
-            if (active) {
-                btn.classList.add('enabled');
-                status.innerText = "Tiger Mode: Active";
-                status.style.color = "#46ff46";
-
-                // Rapidly alternate between Left and Right swipes
-                loop = setInterval(() => {
-                    simulateSwipe('left');
-                    setTimeout(() => simulateSwipe('right'), 2); // Micro-delay to separate them
-                }, 4); // ~250 cycles per second
-
-            } else {
-                btn.classList.remove('enabled');
-                status.innerText = "System Standby";
-                status.style.color = "white";
-                clearInterval(loop);
+            if (state === 'idle') {
+                state = 'recording';
+                btn.className = 'recording';
+                hint.innerText = "Action: Swipe ONCE on the game";
+            } 
+            else if (state === 'recording') {
+                state = 'active';
+                btn.className = 'active';
+                hint.innerText = "Tiger Mod: ACTIVE (Spamming)";
+                // Run at 250Hz (approx 4ms)
+                playbackInterval = setInterval(playBack, 4);
+            } 
+            else {
+                state = 'idle';
+                btn.className = '';
+                hint.innerText = "Status: Idle";
+                clearInterval(playbackInterval);
             }
         });
     </script>
