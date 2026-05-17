@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Key Remapper Dashboard</title>
+    <title>Subway Surfers - Custom Remap Workspace</title>
     <style>
         /* Modern Glassmorphism & Matte Black Theme */
         :root {
-            --bg-main: #09090b;
-            --glass-panel: rgba(17, 17, 20, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg-main: #060608;
+            --glass-panel: rgba(13, 13, 16, 0.82);
+            --glass-border: rgba(255, 255, 255, 0.07);
             --accent-blue: #3b82f6;
-            --accent-blue-glow: rgba(59, 130, 246, 0.4);
+            --accent-blue-glow: rgba(59, 130, 246, 0.45);
             --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
+            --text-muted: #94a3b8;
             --success-green: #10b981;
         }
 
@@ -26,19 +26,19 @@
 
         body {
             background-color: var(--bg-main);
-            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08), transparent 60%);
+            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.06), transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px 20px;
         }
 
         .dashboard {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -46,12 +46,12 @@
 
         .panel {
             background: var(--glass-panel);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
         }
 
         header {
@@ -60,131 +60,137 @@
             align-items: center;
             border-bottom: 1px solid var(--glass-border);
             padding-bottom: 16px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         h1 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
         }
 
         .badge {
             font-size: 0.75rem;
             font-weight: 600;
-            padding: 4px 12px;
-            background: rgba(161, 161, 170, 0.1);
-            border: 1px solid var(--text-muted);
+            padding: 5px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
             border-radius: 999px;
             text-transform: uppercase;
+            letter-spacing: 0.02em;
             transition: all 0.3s ease;
         }
 
         .badge.active {
-            background: rgba(16, 185, 129, 0.15);
+            background: rgba(16, 185, 129, 0.12);
             border-color: var(--success-green);
             color: var(--success-green);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
-        /* Responsive Canvas Game Box */
+        /* High-Performance Sandbox Iframe Screen */
         .game-screen {
             position: relative;
             width: 100%;
-            height: 500px;
+            height: 560px;
             background: #000;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        #gameCanvas {
+        #gameFrame {
             width: 100%;
             height: 100%;
+            border: none;
             display: block;
         }
 
-        /* Controls Panel Structure */
+        /* Controls Panel Layout */
         .controls-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .panel-title {
             font-size: 1rem;
             font-weight: 500;
+            color: var(--text-main);
         }
 
-        /* Toggle Button */
+        /* Action Mapping State Button */
         .toggle-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.18);
         }
 
         .toggle-btn.enabled {
             background: var(--accent-blue);
             color: #ffffff;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 12px var(--accent-blue-glow);
+            box-shadow: 0 0 14px var(--accent-blue-glow);
         }
 
-        /* Bind Grid Setup */
+        /* Config Grid Row */
         .bind-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 14px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
             .bind-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .game-screen {
+                height: 420px;
             }
         }
 
         .bind-box {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .action-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--text-muted);
         }
 
         .key-btn {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
             color: var(--accent-blue);
-            font-family: monospace;
-            font-size: 1rem;
+            font-family: Menlo, Monaco, Consolas, monospace;
+            font-size: 1.05rem;
             font-weight: 700;
             width: 100%;
-            padding: 10px 0;
-            border-radius: 6px;
+            padding: 11px 0;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
             text-transform: uppercase;
@@ -192,20 +198,20 @@
         }
 
         .key-btn:hover {
-            background: rgba(59, 130, 246, 0.05);
+            background: rgba(59, 130, 246, 0.06);
             border-color: var(--accent-blue);
         }
 
         .key-btn.listening {
-            background: rgba(236, 72, 153, 0.1);
-            border-color: #ec4899;
-            color: #ec4899;
-            animation: pulse 1.5s infinite;
+            background: rgba(244, 63, 94, 0.1);
+            border-color: #f43f5e;
+            color: #f43f5e;
+            animation: recordPulse 1.2s infinite;
         }
 
-        @keyframes pulse {
+        @keyframes recordPulse {
             0% { opacity: 1; }
-            50% { opacity: 0.6; }
+            50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
     </style>
@@ -215,28 +221,32 @@
     <div class="dashboard">
         <div class="panel">
             <header>
-                <h1>Subway Surfers Engine Window</h1>
+                <h1>Subway Surfers Engine Sandbox</h1>
                 <div class="badge" id="statusBadge">Standard Inputs</div>
             </header>
 
             <div class="game-screen">
-                <canvas id="gameCanvas"></canvas>
+                <iframe 
+                    src="https://subway-surfers.cc/subway-surfers-games/saint-peterburg" 
+                    id="gameFrame"
+                    allow="autoplay; fullscreen; keyboard">
+                </iframe>
             </div>
         </div>
 
         <div class="panel">
             <div class="controls-header">
-                <span class="panel-title">Keyboard Controller Remapper</span>
+                <span class="panel-title">Custom Input Assignment Profiles</span>
                 <button class="toggle-btn" id="toggleBindsBtn">Enable Custom Binds</button>
             </div>
 
             <div class="bind-grid">
                 <div class="bind-box">
-                    <span class="action-label">Jump (Up)</span>
+                    <span class="action-label">Jump (Up Arrow)</span>
                     <button class="key-btn" id="btn-jump" data-action="jump">W</button>
                 </div>
                 <div class="bind-box">
-                    <span class="action-label">Roll (Down)</span>
+                    <span class="action-label">Roll (Down Arrow)</span>
                     <button class="key-btn" id="btn-roll" data-action="roll">S</button>
                 </div>
                 <div class="bind-box">
@@ -252,11 +262,10 @@
     </div>
 
     <script>
-        // System state tracking
         let customBindsEnabled = false;
         let activeListeningButton = null;
 
-        // Default custom layout definitions
+        // Default layout parameters
         const keyMap = {
             jump: { key: 'w', code: 'KeyW', arrowEquivalent: 'ArrowUp' },
             roll: { key: 's', code: 'KeyS', arrowEquivalent: 'ArrowDown' },
@@ -267,8 +276,9 @@
         const toggleBtn = document.getElementById('toggleBindsBtn');
         const statusBadge = document.getElementById('statusBadge');
         const keyButtons = document.querySelectorAll('.key-btn');
+        const gameFrame = document.getElementById('gameFrame');
 
-        // Toggle Key Remapper State
+        // Main Toggle Logic
         toggleBtn.addEventListener('click', () => {
             customBindsEnabled = !customBindsEnabled;
             
@@ -277,13 +287,14 @@
                 toggleBtn.textContent = "Custom Binds Active";
                 statusBadge.classList.add('active');
                 statusBadge.textContent = "Remap Profiles On";
+                // Shift immediate processing focus to the main runner framework window
+                gameFrame.focus();
             } else {
                 toggleBtn.classList.remove('enabled');
                 toggleBtn.textContent = "Enable Custom Binds";
                 statusBadge.classList.remove('active');
                 statusBadge.textContent = "Standard Inputs";
                 
-                // Reset listening if turned off mid-assignment
                 if (activeListeningButton) {
                     activeListeningButton.classList.remove('listening');
                     activeListeningButton = null;
@@ -291,7 +302,7 @@
             }
         });
 
-        // Click handler to assign a new physical key
+        // Trigger configuration map state on selector click
         keyButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 if (activeListeningButton) {
@@ -303,43 +314,37 @@
             });
         });
 
-        // Global key interceptor listening window
+        // Global Interception Event Handler Engine
         window.addEventListener('keydown', (e) => {
-            // Case A: System is assigning a new control bind
+            // Processing Flow 1: Intercept configuration assign parameters
             if (activeListeningButton) {
                 e.preventDefault();
                 const action = activeListeningButton.getAttribute('data-action');
                 
-                // Store structural key data
                 keyMap[action].key = e.key.toLowerCase();
                 keyMap[action].code = e.code;
 
-                // Interface update
                 activeListeningButton.textContent = e.key === " " ? "Space" : e.key;
                 activeListeningButton.classList.remove('listening');
                 activeListeningButton = null;
                 return;
             }
 
-            // Case B: Mapping inputs into native arrows for engine delivery
+            // Processing Flow 2: Dynamic Input Redirect Mapping Execution
             if (customBindsEnabled) {
                 const pressedKey = e.key.toLowerCase();
                 const pressedCode = e.code;
 
-                // Check matches inside custom values
                 for (const action in keyMap) {
                     if (keyMap[action].key === pressedKey || keyMap[action].code === pressedCode) {
                         e.preventDefault();
-                        
-                        // Fire cloned keyboard dispatch onto the canvas mimicking native arrow parameters
-                        dispatchClonedArrowKey('keydown', keyMap[action].arrowEquivalent);
+                        dispatchRedirectedArrow('keydown', keyMap[action].arrowEquivalent);
                         break;
                     }
                 }
             }
         });
 
-        // Mirror up actions to cleanly end running animations or continuous actions
         window.addEventListener('keyup', (e) => {
             if (customBindsEnabled) {
                 const pressedKey = e.key.toLowerCase();
@@ -347,18 +352,16 @@
 
                 for (const action in keyMap) {
                     if (keyMap[action].key === pressedKey || keyMap[action].code === pressedCode) {
-                        dispatchClonedArrowKey('keyup', keyMap[action].arrowEquivalent);
+                        dispatchRedirectedArrow('keyup', keyMap[action].arrowEquivalent);
                         break;
                     }
                 }
             }
         });
 
-        // Event Factory Function: Generates and dispatches an authentic matching Arrow event
-        function dispatchClonedArrowKey(type, arrowValue) {
-            const canvas = document.getElementById('gameCanvas');
-            
-            const eventProperties = {
+        // Frame Injector Factory: Safely routes and dispatches customized key bindings to running environments
+        function dispatchRedirectedArrow(type, arrowValue) {
+            const properties = {
                 key: arrowValue,
                 code: arrowValue,
                 keyCode: getArrowKeyCode(arrowValue),
@@ -367,11 +370,13 @@
                 cancelable: true
             };
 
-            const clonedEvent = new KeyboardEvent(type, eventProperties);
+            const simulatedEvent = new KeyboardEvent(type, properties);
             
-            // Dispatch directly to the active canvas and layout frame window context
-            canvas.dispatchEvent(clonedEvent);
-            window.dispatchEvent(clonedEvent);
+            // Fires across document layout frames to maintain key injection focus points
+            window.dispatchEvent(simulatedEvent);
+            if (gameFrame.contentWindow) {
+                gameFrame.contentWindow.dispatchEvent(simulatedEvent);
+            }
         }
 
         function getArrowKeyCode(arrowName) {
