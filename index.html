@@ -27,7 +27,6 @@
     </script>
 
     <style>
-        /* Smooth base style */
         body, html {
             margin: 0;
             padding: 0;
@@ -44,7 +43,7 @@
             top: 25px;
             left: 25px;
             z-index: 99999;
-            background: rgba(10, 10, 10, 0.7);
+            background: rgba(10, 10, 10, 0.75);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -79,7 +78,6 @@
             font-weight: 500;
         }
 
-        /* Custom Slider Design */
         .custom-slider {
             -webkit-appearance: none;
             width: 100%;
@@ -115,7 +113,7 @@
                 <span>Velocity</span>
                 <span id="speed-display">1.0x</span>
             </div>
-            <input type="range" min="0.1" max="4.0" step="0.1" value="1.0" class="custom-slider" id="speed-controller">
+            <input type="range" min="0.2" max="4.0" step="0.1" value="1.0" class="custom-slider" id="speed-controller">
         </div>
     </div>
 
@@ -158,22 +156,35 @@
     <script>
         const speedInput = document.getElementById('speed-controller');
         const speedDisplay = document.getElementById('speed-display');
+        
+        let globalSpeedMultiplier = 1.0;
 
-        function modifyEngineSpeed(scale) {
-            // Target the loaded unity game instance handler directly if compiled hooks match
-            if (window.unityInstance && window.unityInstance.SendMessage) {
-                try {
-                    window.unityInstance.SendMessage('TimeScaleController', 'SetTimeScale', scale);
-                } catch(e) {
-                    console.log("Unity instance method structure alternate route.");
-                }
-            }
-        }
+        // Intercept WebGL's frame loop baseline before Unity even begins initialization
+        (function() {
+            const originalRAF = window.requestAnimationFrame;
+            const originalCancelAF = window.cancelAnimationFrame;
+            const activeTimers = new Map();
 
+            window.requestAnimationFrame = function(callback) {
+                // Wrap the standard frame logic to repeat/skip iterations dynamically based on speed scale
+                const customCallback = function(timestamp) {
+                    if (globalSpeedMultiplier === 1.0) {
+                        callback(timestamp);
+                    } else {
+                        // Artificially manipulate the delta clock reference timing passed to Unity engine
+                        const adjustedTimestamp = timestamp * globalSpeedMultiplier;
+                        callback(adjustedTimestamp);
+                    }
+                };
+                return originalRAF(customCallback);
+            };
+        })();
+
+        // Monitor slider state adjustments
         speedInput.addEventListener('input', (event) => {
-            const multiplier = parseFloat(event.target.value).toFixed(1);
-            speedDisplay.textContent = `${multiplier}x`;
-            modifyEngineSpeed(multiplier);
+            const multiplier = parseFloat(event.target.value);
+            speedDisplay.textContent = `${multiplier.toFixed(1)}x`;
+            globalSpeedMultiplier = multiplier;
         });
     </script>
 </body>
