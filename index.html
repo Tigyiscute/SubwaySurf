@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Custom Dashboard</title>
+    <title>Subway Surfers - Key Remapper Dashboard</title>
     <style>
-        /* Modern Black Glass / Minimalist Dark Gold Aesthetic */
+        /* Modern Glassmorphism & Matte Black Theme */
         :root {
-            --bg-color: #0a0a0c;
-            --glass-bg: rgba(18, 18, 22, 0.7);
+            --bg-main: #09090b;
+            --glass-panel: rgba(17, 17, 20, 0.75);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-gold: #e5b842;
-            --accent-gold-hover: #f1cc67;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.4);
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --success-green: #10b981;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(229, 184, 66, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.02) 0px, transparent 50%);
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08), transparent 60%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -35,26 +34,24 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        .container {
+        .dashboard {
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        /* Glassmorphism Wrapper */
-        .glass-panel {
-            background: var(--glass-bg);
+        .panel {
+            background: var(--glass-panel);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         header {
@@ -63,204 +60,329 @@
             align-items: center;
             border-bottom: 1px solid var(--glass-border);
             padding-bottom: 16px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            background: linear-gradient(135deg, #ffffff 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status-badge {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 4px 10px;
-            background: rgba(229, 184, 66, 0.1);
-            border: 1px solid rgba(229, 184, 66, 0.2);
-            color: var(--accent-gold);
-            border-radius: 9999px;
+            font-size: 1.4rem;
             font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
-        /* Game Frame Styling */
-        .game-wrapper {
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            background: rgba(161, 161, 170, 0.1);
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            border-radius: 999px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        /* Responsive Canvas Game Box */
+        .game-screen {
             position: relative;
             width: 100%;
-            height: 550px;
+            height: 500px;
             background: #000;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        iframe {
+        #gameCanvas {
             width: 100%;
             height: 100%;
-            border: none;
-            transition: transform 0.1s ease-out;
+            display: block;
         }
 
-        /* Speed Control Dashboard */
-        .control-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .control-label-row {
+        /* Controls Panel Structure */
+        .controls-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 16px;
         }
 
-        .control-title {
-            font-size: 0.95rem;
+        .panel-title {
+            font-size: 1rem;
             font-weight: 500;
-            color: var(--text-main);
         }
 
-        .speed-value {
-            font-family: monospace;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-gold);
-            background: rgba(0, 0, 0, 0.2);
-            padding: 2px 8px;
-            border-radius: 6px;
+        /* Toggle Button */
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        /* Custom Range Slider Styling */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
+        .toggle-btn:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 9999px;
-            outline: none;
-            transition: background 0.3s;
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--accent-gold);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(229, 184, 66, 0.5);
-            transition: transform 0.1s, background-color 0.1s;
+        .toggle-btn.enabled {
+            background: var(--accent-blue);
+            color: #ffffff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px var(--accent-blue-glow);
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: var(--accent-gold-hover);
-            transform: scale(1.15);
+        /* Bind Grid Setup */
+        .bind-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: var(--accent-gold);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(229, 184, 66, 0.5);
-            transition: transform 0.1s, background-color 0.1s;
+        @media (max-width: 600px) {
+            .bind-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        input[type="range"]::-moz-range-thumb:hover {
-            background: var(--accent-gold-hover);
-            transform: scale(1.15);
+        .bind-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
-        .instructions {
-            font-size: 0.8rem;
+        .action-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            line-height: 1.4;
+        }
+
+        .key-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--accent-blue);
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            transition: all 0.15s ease;
+        }
+
+        .key-btn:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: var(--accent-blue);
+        }
+
+        .key-btn.listening {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: #ec4899;
+            color: #ec4899;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="glass-panel">
+    <div class="dashboard">
+        <div class="panel">
             <header>
-                <h1>Subway Surfers: Engine Dashboard</h1>
-                <div class="status-badge" id="engineStatus">Mod Link Active</div>
+                <h1>Subway Surfers Engine Window</h1>
+                <div class="badge" id="statusBadge">Standard Inputs</div>
             </header>
 
-            <div class="game-wrapper" id="gameContainer">
-                <iframe 
-                    id="gameFrame"
-                    src="https://subway-surfers.cc/subway-surfers-games/saint-peterburg" 
-                    allowfullscreen="true"
-                    scrolling="no">
-                </iframe>
+            <div class="game-screen">
+                <canvas id="gameCanvas"></canvas>
             </div>
         </div>
 
-        <div class="glass-panel control-panel">
-            <div class="control-label-row">
-                <span class="control-title">Velocity Modifier (Game Speed)</span>
-                <span class="speed-value" id="speedDisplay">1.00x</span>
+        <div class="panel">
+            <div class="controls-header">
+                <span class="panel-title">Keyboard Controller Remapper</span>
+                <button class="toggle-btn" id="toggleBindsBtn">Enable Custom Binds</button>
             </div>
-            
-            <div class="slider-container">
-                <input 
-                    type="range" 
-                    id="speedSlider" 
-                    min="0.25" 
-                    max="3.00" 
-                    step="0.05" 
-                    value="1.00"
-                >
+
+            <div class="bind-grid">
+                <div class="bind-box">
+                    <span class="action-label">Jump (Up)</span>
+                    <button class="key-btn" id="btn-jump" data-action="jump">W</button>
+                </div>
+                <div class="bind-box">
+                    <span class="action-label">Roll (Down)</span>
+                    <button class="key-btn" id="btn-roll" data-action="roll">S</button>
+                </div>
+                <div class="bind-box">
+                    <span class="action-label">Move Left</span>
+                    <button class="key-btn" id="btn-left" data-action="left">A</button>
+                </div>
+                <div class="bind-box">
+                    <span class="action-label">Move Right</span>
+                    <button class="key-btn" id="btn-right" data-action="right">D</button>
+                </div>
             </div>
-            
-            <p class="instructions">
-                * Adjust the slider to scale game refresh ticks and monitor refresh pacing constraints. For true physical game loop manipulation inside secured engines, configurations must be handled directly via embedded runtime memory maps or local asset loads.
-            </p>
         </div>
     </div>
 
     <script>
-        const speedSlider = document.getElementById('speedSlider');
-        const speedDisplay = document.getElementById('speedDisplay');
-        const gameFrame = document.getElementById('gameFrame');
-        const engineStatus = document.getElementById('engineStatus');
+        // System state tracking
+        let customBindsEnabled = false;
+        let activeListeningButton = null;
 
-        // Handling structural slider updates safely across security borders
-        speedSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value).toFixed(2);
-            speedDisplay.textContent = `${val}x`;
+        // Default custom layout definitions
+        const keyMap = {
+            jump: { key: 'w', code: 'KeyW', arrowEquivalent: 'ArrowUp' },
+            roll: { key: 's', code: 'KeyS', arrowEquivalent: 'ArrowDown' },
+            left: { key: 'a', code: 'KeyA', arrowEquivalent: 'ArrowLeft' },
+            right: { key: 'd', code: 'KeyD', arrowEquivalent: 'ArrowRight' }
+        };
 
-            if (val == 1.00) {
-                engineStatus.textContent = "Mod Link Active";
-                engineStatus.style.color = "var(--accent-gold)";
-                engineStatus.style.background = "rgba(229, 184, 66, 0.1)";
-                gameFrame.style.transform = "scale(1)";
+        const toggleBtn = document.getElementById('toggleBindsBtn');
+        const statusBadge = document.getElementById('statusBadge');
+        const keyButtons = document.querySelectorAll('.key-btn');
+
+        // Toggle Key Remapper State
+        toggleBtn.addEventListener('click', () => {
+            customBindsEnabled = !customBindsEnabled;
+            
+            if (customBindsEnabled) {
+                toggleBtn.classList.add('enabled');
+                toggleBtn.textContent = "Custom Binds Active";
+                statusBadge.classList.add('active');
+                statusBadge.textContent = "Remap Profiles On";
             } else {
-                engineStatus.textContent = `Overclocked: ${val}x`;
-                engineStatus.style.color = "#ef4444";
-                engineStatus.style.background = "rgba(239, 68, 68, 0.1)";
+                toggleBtn.classList.remove('enabled');
+                toggleBtn.textContent = "Enable Custom Binds";
+                statusBadge.classList.remove('active');
+                statusBadge.textContent = "Standard Inputs";
                 
-                // Visual feedback container scaling mirroring structural changes
-                let structuralScale = 1 + (val - 1) * 0.02;
-                gameFrame.style.transform = `scale(${structuralScale})`;
+                // Reset listening if turned off mid-assignment
+                if (activeListeningButton) {
+                    activeListeningButton.classList.remove('listening');
+                    activeListeningButton = null;
+                }
             }
         });
+
+        // Click handler to assign a new physical key
+        keyButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (activeListeningButton) {
+                    activeListeningButton.classList.remove('listening');
+                }
+                activeListeningButton = e.target;
+                activeListeningButton.classList.add('listening');
+                activeListeningButton.textContent = "...";
+            });
+        });
+
+        // Global key interceptor listening window
+        window.addEventListener('keydown', (e) => {
+            // Case A: System is assigning a new control bind
+            if (activeListeningButton) {
+                e.preventDefault();
+                const action = activeListeningButton.getAttribute('data-action');
+                
+                // Store structural key data
+                keyMap[action].key = e.key.toLowerCase();
+                keyMap[action].code = e.code;
+
+                // Interface update
+                activeListeningButton.textContent = e.key === " " ? "Space" : e.key;
+                activeListeningButton.classList.remove('listening');
+                activeListeningButton = null;
+                return;
+            }
+
+            // Case B: Mapping inputs into native arrows for engine delivery
+            if (customBindsEnabled) {
+                const pressedKey = e.key.toLowerCase();
+                const pressedCode = e.code;
+
+                // Check matches inside custom values
+                for (const action in keyMap) {
+                    if (keyMap[action].key === pressedKey || keyMap[action].code === pressedCode) {
+                        e.preventDefault();
+                        
+                        // Fire cloned keyboard dispatch onto the canvas mimicking native arrow parameters
+                        dispatchClonedArrowKey('keydown', keyMap[action].arrowEquivalent);
+                        break;
+                    }
+                }
+            }
+        });
+
+        // Mirror up actions to cleanly end running animations or continuous actions
+        window.addEventListener('keyup', (e) => {
+            if (customBindsEnabled) {
+                const pressedKey = e.key.toLowerCase();
+                const pressedCode = e.code;
+
+                for (const action in keyMap) {
+                    if (keyMap[action].key === pressedKey || keyMap[action].code === pressedCode) {
+                        dispatchClonedArrowKey('keyup', keyMap[action].arrowEquivalent);
+                        break;
+                    }
+                }
+            }
+        });
+
+        // Event Factory Function: Generates and dispatches an authentic matching Arrow event
+        function dispatchClonedArrowKey(type, arrowValue) {
+            const canvas = document.getElementById('gameCanvas');
+            
+            const eventProperties = {
+                key: arrowValue,
+                code: arrowValue,
+                keyCode: getArrowKeyCode(arrowValue),
+                which: getArrowKeyCode(arrowValue),
+                bubbles: true,
+                cancelable: true
+            };
+
+            const clonedEvent = new KeyboardEvent(type, eventProperties);
+            
+            // Dispatch directly to the active canvas and layout frame window context
+            canvas.dispatchEvent(clonedEvent);
+            window.dispatchEvent(clonedEvent);
+        }
+
+        function getArrowKeyCode(arrowName) {
+            switch(arrowName) {
+                case 'ArrowLeft': return 37;
+                case 'ArrowUp': return 38;
+                case 'ArrowRight': return 39;
+                case 'ArrowDown': return 40;
+                default: return 0;
+            }
+        }
     </script>
 </body>
 </html>
