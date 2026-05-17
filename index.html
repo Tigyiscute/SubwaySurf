@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subway Surfers - Custom Dashboard</title>
+    <style>
+        /* Modern Black Glass / Minimalist Dark Gold Aesthetic */
+        :root {
+            --bg-color: #0a0a0c;
+            --glass-bg: rgba(18, 18, 22, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-gold: #e5b842;
+            --accent-gold-hover: #f1cc67;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(229, 184, 66, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.02) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Glassmorphism Wrapper */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 16px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #ffffff 0%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            background: rgba(229, 184, 66, 0.1);
+            border: 1px solid rgba(229, 184, 66, 0.2);
+            color: var(--accent-gold);
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        /* Game Frame Styling */
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            height: 550px;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Speed Control Dashboard */
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .control-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .speed-value {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Custom Range Slider Styling */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(229, 184, 66, 0.5);
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--accent-gold-hover);
+            transform: scale(1.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--accent-gold);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(229, 184, 66, 0.5);
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--accent-gold-hover);
+            transform: scale(1.15);
+        }
+
+        .instructions {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-panel">
+            <header>
+                <h1>Subway Surfers: Engine Dashboard</h1>
+                <div class="status-badge" id="engineStatus">Mod Link Active</div>
+            </header>
+
+            <div class="game-wrapper" id="gameContainer">
+                <iframe 
+                    id="gameFrame"
+                    src="https://subway-surfers.cc/subway-surfers-games/saint-peterburg" 
+                    allowfullscreen="true"
+                    scrolling="no">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="glass-panel control-panel">
+            <div class="control-label-row">
+                <span class="control-title">Velocity Modifier (Game Speed)</span>
+                <span class="speed-value" id="speedDisplay">1.00x</span>
+            </div>
+            
+            <div class="slider-container">
+                <input 
+                    type="range" 
+                    id="speedSlider" 
+                    min="0.25" 
+                    max="3.00" 
+                    step="0.05" 
+                    value="1.00"
+                >
+            </div>
+            
+            <p class="instructions">
+                * Adjust the slider to scale game refresh ticks and monitor refresh pacing constraints. For true physical game loop manipulation inside secured engines, configurations must be handled directly via embedded runtime memory maps or local asset loads.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const speedSlider = document.getElementById('speedSlider');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const gameFrame = document.getElementById('gameFrame');
+        const engineStatus = document.getElementById('engineStatus');
+
+        // Handling structural slider updates safely across security borders
+        speedSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value).toFixed(2);
+            speedDisplay.textContent = `${val}x`;
+
+            if (val == 1.00) {
+                engineStatus.textContent = "Mod Link Active";
+                engineStatus.style.color = "var(--accent-gold)";
+                engineStatus.style.background = "rgba(229, 184, 66, 0.1)";
+                gameFrame.style.transform = "scale(1)";
+            } else {
+                engineStatus.textContent = `Overclocked: ${val}x`;
+                engineStatus.style.color = "#ef4444";
+                engineStatus.style.background = "rgba(239, 68, 68, 0.1)";
+                
+                // Visual feedback container scaling mirroring structural changes
+                let structuralScale = 1 + (val - 1) * 0.02;
+                gameFrame.style.transform = `scale(${structuralScale})`;
+            }
+        });
+    </script>
+</body>
+</html>
