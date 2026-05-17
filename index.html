@@ -1,111 +1,180 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>Subway Surfers - Arrow Spam</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,shrink-to-fit=no"/>
+    <title>Subway Surfers | Custom Speed Edition</title>
+    <link rel="icon" href="icon/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="icon/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/save-popup.css">
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isOriginal = urlParams.get('mode') === 'original';
+
+        window.config = {
+            loader: "unity",
+            debug: false,
+            maxRatio: 16 / 9,
+            minRatio: 9 / 16,
+            title: isOriginal ? "Houston Original Map | RandomKZN" : "Houston Training Map | RandomKZN",
+            unityVersion: "2019.4.18f1",
+            unityWebglBuildUrl: isOriginal
+                ? "https://cdn.ss.randomkzn.com/Build/15/15_1.json"
+                : "https://cdn.ss.randomkzn.com/Build/15/15.json",
+            fileSize: 41,
+        };
+    </script>
+
     <style>
-        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
-        iframe { width: 100%; height: 100%; border: none; }
-        
-        #tiger {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 85px;
-            height: 85px;
-            border-radius: 50%;
-            background: rgba(255, 50, 50, 0.4); /* Glass Red */
+        /* Smooth base style */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Minimalist Black Glass HUD Panel */
+        #speed-panel {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            z-index: 99999;
+            background: rgba(10, 10, 10, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 2px solid rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 45px;
-            cursor: pointer;
-            z-index: 9999;
-            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 22px;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+            width: 230px;
+            color: #ffffff;
             user-select: none;
         }
 
-        #tiger.enabled {
-            background: rgba(50, 255, 50, 0.6); /* Glass Green */
-            box-shadow: 0 0 30px rgba(50, 255, 50, 0.4);
-            transform: scale(1.1);
+        .panel-header {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        #status-bar {
-            position: fixed;
-            bottom: 130px;
-            right: 30px;
-            color: white;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 15px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.1);
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        /* Custom Slider Design */
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.12);
+            outline: none;
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+            transition: transform 0.15s ease;
+        }
+
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
         }
     </style>
 </head>
 <body>
 
-<div id="status-bar">PRESS [Q] TO TOGGLE</div>
-<div id="tiger">🐯</div>
-<iframe id="game" src="https://ss.randomkzn.com/berlin?mode=original"></iframe>
+    <div id="speed-panel">
+        <div class="panel-header">Engine Modifier</div>
+        <div class="slider-group">
+            <div class="slider-labels">
+                <span>Velocity</span>
+                <span id="speed-display">1.0x</span>
+            </div>
+            <input type="range" min="0.1" max="4.0" step="0.1" value="1.0" class="custom-slider" id="speed-controller">
+        </div>
+    </div>
 
-<script>
-    const tiger = document.getElementById('tiger');
-    const statusBar = document.getElementById('status-bar');
-    let active = false;
-    let timer = null;
+    <script src="js/4399.sf.js"></script>
+    <script src="js/master-loader.js"></script>
 
-    // Standard arrow key simulation
-    function sendArrow(dir) {
-        const code = dir === 'left' ? 'ArrowLeft' : 'ArrowRight';
-        const e = new KeyboardEvent('keydown', {
-            key: code,
-            code: code,
-            keyCode: dir === 'left' ? 37 : 39,
-            which: dir === 'left' ? 37 : 39,
-            bubbles: true
+    <script>
+        (function(){
+            function c(){
+                var b=a.contentDocument||a.contentWindow.document;
+                if(b){
+                    var d=b.createElement('script');
+                    d.innerHTML="window.__CF$cv$params={r:'9fd47eee5d92cb9f',t:'MTc3OTA0MDU1NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d);
+                }
+            }
+            if(document.body){
+                var a=document.createElement('iframe');
+                a.height=1;
+                a.width=1;
+                a.style.position='absolute';
+                a.style.top=0;
+                a.style.left=0;
+                a.style.border='none';
+                a.style.visibility='hidden';
+                document.body.appendChild(a);
+                if('loading'!==document.readyState) c();
+                else if(window.addEventListener) document.addEventListener('DOMContentLoaded',c);
+                else {
+                    var e=document.onreadystatechange||function(){};
+                    document.onreadystatechange=function(b){
+                        e(b);
+                        'loading'!==document.readyState&&(document.onreadystatechange=e,c());
+                    };
+                }
+            }
+        })();
+    </script>
+
+    <script>
+        const speedInput = document.getElementById('speed-controller');
+        const speedDisplay = document.getElementById('speed-display');
+
+        function modifyEngineSpeed(scale) {
+            // Target the loaded unity game instance handler directly if compiled hooks match
+            if (window.unityInstance && window.unityInstance.SendMessage) {
+                try {
+                    window.unityInstance.SendMessage('TimeScaleController', 'SetTimeScale', scale);
+                } catch(e) {
+                    console.log("Unity instance method structure alternate route.");
+                }
+            }
+        }
+
+        speedInput.addEventListener('input', (event) => {
+            const multiplier = parseFloat(event.target.value).toFixed(1);
+            speedDisplay.textContent = `${multiplier}x`;
+            modifyEngineSpeed(multiplier);
         });
-        document.dispatchEvent(e);
-        window.dispatchEvent(e);
-    }
-
-    function toggle() {
-        active = !active;
-        if (active) {
-            tiger.classList.add('enabled');
-            statusBar.innerText = "TIGER ACTIVE: SPAMMING ARROWS";
-            statusBar.style.color = "#44ff44";
-            
-            // 4ms = ~250 keys per second
-            timer = setInterval(() => {
-                sendArrow('left');
-                sendArrow('right');
-            }, 4);
-        } else {
-            tiger.classList.remove('enabled');
-            statusBar.innerText = "PRESS [Q] TO TOGGLE";
-            statusBar.style.color = "white";
-            clearInterval(timer);
-        }
-    }
-
-    // Toggle via Click
-    tiger.onclick = toggle;
-
-    // Toggle via "Q" Key
-    window.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'q') {
-            toggle();
-        }
-    });
-</script>
-
+    </script>
 </body>
 </html>
