@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tigy Coding | Monaco Matrix Mod</title>
+    <title>Tigy Coding | Native Speed Hack Port</title>
     <style>
-        /* Smooth Black Premium Base */
         body, html {
             margin: 0; padding: 0; height: 100%;
             background: #09090b;
@@ -25,7 +24,7 @@
             pointer-events: none;
         }
 
-        /* Premium Black Glassmorphism Mod Control Panel Dashboard */
+        /* Black Glassmorphic Mod Menu Control Dashboard */
         #mod-dashboard {
             position: fixed;
             top: 20px; left: 50%;
@@ -53,7 +52,7 @@
             color: #00f2ff;
         }
 
-        /* Custom Neon Hack Slider */
+        /* Neon Speed Slider */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -61,27 +60,27 @@
             height: 6px;
             border-radius: 50px;
             outline: none;
-            width: 110px;
+            width: 120px;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #00f2ff;
+            background: linear-gradient(90deg, #00f2ff, #00ff88);
             cursor: pointer;
-            box-shadow: 0 0 10px #00f2ff;
+            box-shadow: 0 0 10px #00ff88;
         }
 
         .multiplier-display {
             font-family: monospace;
             color: #00ff88;
             min-width: 35px;
+            font-weight: bold;
         }
 
-        /* Neon Tiger Toggle Button */
         .tiger-toggle-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -94,7 +93,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
 
         .tiger-toggle-btn.macro-active {
@@ -104,65 +103,18 @@
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
         }
 
-        .game-frame {
+        #gameCanvas {
+            display: block;
             width: 100vw;
             height: 100vh;
-            border: none;
             position: relative;
-            z-index: 2;
-            background: transparent;
-        }
-
-        /* Interaction Entry Gate */
-        #focus-gate {
-            position: fixed;
-            inset: 0;
-            background: rgba(5, 5, 5, 0.92);
-            z-index: 200;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .glass-card {
-            background: rgba(20, 20, 25, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 45px;
-            border-radius: 28px;
-            text-align: center;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-        }
-
-        .action-btn {
-            background: linear-gradient(90deg, #00f2ff, #00ff88);
-            color: #000;
-            padding: 16px 40px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 1.25rem;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
+            z-index: 5;
         }
     </style>
 </head>
 <body>
 
 <div class="glow-overlay"></div>
-
-<div id="focus-gate" onclick="startEngine()">
-    <div class="glass-card">
-        <h1 style="color: #fff; margin: 0 0 8px 0; font-size: 2.2rem; letter-spacing: -0.5px;">SUBWAY SURFERS</h1>
-        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">🐯 SPEED INJECTOR PRO</p>
-        <button class="action-btn">LAUNCH HUB</button>
-    </div>
-</div>
 
 <div id="mod-dashboard">
     <button id="tigerBtn" class="tiger-toggle-btn" onclick="toggleTigerHack()">
@@ -172,119 +124,183 @@
     <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.15);"></div>
     
     <div class="control-group">
-        <label for="hackInterval">Hack Clock:</label>
-        <input type="range" id="hackInterval" min="1" max="10" step="1" value="5" oninput="adjustHackFrequency(this.value)">
-        <span id="hzDisplay" class="multiplier-display">5x</span>
+        <label for="speedSlider">SPEED MULTIPLIER:</label>
+        <input type="range" id="speedSlider" min="0.5" max="5.0" step="0.1" value="1.0" oninput="injectSpeedHack(this.value)">
+        <span id="multiplierValue" class="multiplier-display">1.0x</span>
     </div>
 </div>
 
-<iframe id="gameViewport" class="game-frame" src="https://subwaysurferscity.io/subway-surfers-monaco.embed" scrolling="none"></iframe>
+<canvas id="gameCanvas"></canvas>
 
 <script>
-    let hackIntervalId = null;
-    let isHackRunning = false;
-    let switchSide = false;
-    let systemPulseRate = 50; // Milliseconds per cycle block
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-    function startEngine() {
-        document.getElementById('focus-gate').style.display = 'none';
-        document.getElementById('gameViewport').focus();
+    function resizeViewport() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
+    window.addEventListener('resize', resizeViewport);
+    resizeViewport();
 
-    function adjustHackFrequency(val) {
-        // Maps the slider multiplier directly into execution speeds
-        systemPulseRate = Math.round(250 / parseInt(val));
-        document.getElementById('hzDisplay').innerText = val + 'x';
-        
-        // Live recycle if thread is currently spinning
-        if (isHackRunning) {
-            stopThreadLoop();
-            startThreadLoop();
-        }
+    // SPEED HACK CORE CORE VARIABLE
+    let speedHackMultiplier = 1.0;
+    let isTigerRunning = false;
+    let tigerTimer = 0;
+
+    function injectSpeedHack(val) {
+        speedHackMultiplier = parseFloat(val);
+        document.getElementById('multiplierValue').innerText = val + 'x';
     }
 
     function toggleTigerHack() {
-        isHackRunning = !isHackRunning;
-        const btn = document.getElementById('tigerBtn');
-        const statusText = document.getElementById('statusText');
+        isTigerRunning = !isTigerRunning;
+        document.getElementById('tigerBtn').classList.toggle('macro-active', isTigerRunning);
+        document.getElementById('statusText').innerText = isTigerRunning ? "ON" : "OFF";
+    }
 
-        if (isHackRunning) {
-            btn.classList.add('macro-active');
-            statusText.innerText = "ON";
-            startThreadLoop();
-        } else {
-            btn.classList.remove('macro-active');
-            statusText.innerText = "OFF";
-            stopThreadLoop();
+    // Engine Configurations
+    const player = {
+        x: 0, y: 0, width: 44, height: 65,
+        lane: 1, targetX: 0,
+        jumping: false, velocity: 0, gravity: 0.6
+    };
+
+    const tracks = {
+        getLaneX: function(lane) {
+            const step = canvas.width / 4;
+            return (canvas.width / 2) - step + (lane * step) - (player.width / 2);
         }
-        document.getElementById('gameViewport').focus();
-    }
+    };
+    player.x = tracks.getLaneX(player.lane);
+    player.targetX = player.x;
 
-    function startThreadLoop() {
-        const frameWindow = document.getElementById('gameViewport').contentWindow;
+    let obstacles = [];
+    let baseSpeed = 6.5; 
+    let gameScore = 0;
+    let hazardSpawnTimer = 0;
+
+    // Standard Keyboard Route Mapping (WASD Supported natively)
+    window.addEventListener('keydown', function(e) {
+        const key = e.key.toLowerCase();
         
-        hackIntervalId = setInterval(() => {
-            // Emulates shifting variables back and forth rapidly to trick execution states
-            let targetVector = switchSide ? 37 : 39;
-            switchSide = !switchSide;
-
-            try {
-                // Injects simulated hardware states down into the iframe environment window
-                frameWindow.postMessage({ type: 'keydown', keyCode: targetVector }, '*');
-                frameWindow.postMessage({ type: 'keypress', keyCode: targetVector }, '*');
-            } catch (err) {}
-
-            // Global root layout thread fallback force injection
-            const corePulseEvent = new KeyboardEvent('keydown', {
-                keyCode: targetVector,
-                which: targetVector,
-                bubbles: true,
-                cancelable: true
-            });
-            document.dispatchEvent(corePulseEvent);
-        }, systemPulseRate);
-    }
-
-    function stopThreadLoop() {
-        if (hackIntervalId) {
-            clearInterval(hackIntervalId);
-            hackIntervalId = null;
-        }
-    }
-
-    // Capture standard control mappings cleanly
-    window.addEventListener("keydown", function(e) {
-        const keyStroke = e.key.toLowerCase();
-        
-        // Q Toggles the Entire Injector Process Loop
-        if (keyStroke === 'q') {
-            e.preventDefault();
+        if (key === 'q') {
             toggleTigerHack();
             return;
         }
-
-        // Keep core hardware WASD inputs translated cleanly down into standard navigation vectors
-        let virtualKeyCode;
-        if (keyStroke === 'w') virtualKeyCode = 38; // Up
-        if (keyStroke === 's') virtualKeyCode = 40; // Down
-        if (keyStroke === 'a') virtualKeyCode = 37; // Left
-        if (keyStroke === 'd') virtualKeyCode = 39; // Right
-
-        if (virtualKeyCode) {
-            e.preventDefault();
-            const destinationFrame = document.getElementById('gameViewport').contentWindow;
-            try {
-                destinationFrame.postMessage({ type: 'keydown', keyCode: virtualKeyCode }, '*');
-            } catch (err) {}
-
-            const trackingEvent = new KeyboardEvent('keydown', {
-                keyCode: virtualKeyCode,
-                which: virtualKeyCode,
-                bubbles: true
-            });
-            document.dispatchEvent(trackingEvent);
+        if ((key === 'a' || e.key === 'ArrowLeft') && player.lane > 0) {
+            player.lane--;
+            player.targetX = tracks.getLaneX(player.lane);
         }
-    }, true);
+        if ((key === 'd' || e.key === 'ArrowRight') && player.lane < 2) {
+            player.lane++;
+            player.targetX = tracks.getLaneX(player.lane);
+        }
+        if ((key === 'w' || e.key === ' ' || e.key === 'ArrowUp') && !player.jumping) {
+            player.jumping = true;
+            player.velocity = -14.5;
+        }
+    });
+
+    function spawnObstacle() {
+        const lane = Math.floor(Math.random() * 3);
+        obstacles.push({
+            x: tracks.getLaneX(lane) + (player.width - 42) / 2,
+            y: -80, width: 42, height: 45, lane: lane
+        });
+    }
+
+    // CORE NATIVE RUNTIME MATRIX LOOP
+    function engineTick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // SPEED HACK APPLIED DIRECTLY HERE TO RUNTIME PHYSICS
+        let frameVelocity = baseSpeed * speedHackMultiplier;
+
+        // Draw Tracks
+        ctx.strokeStyle = 'rgba(0, 242, 255, 0.15)';
+        ctx.lineWidth = 3;
+        for(let i = 0; i < 3; i++) {
+            ctx.onprefix = true;
+            ctx.beginPath();
+            ctx.moveTo((canvas.width / 2) - (canvas.width / 4) + (i * (canvas.width / 4)), 0);
+            ctx.lineTo((canvas.width / 2) - (canvas.width / 4) + (i * (canvas.width / 4)), canvas.height);
+            ctx.stroke();
+        }
+
+        // Interpolate lateral movement smoothly
+        player.x += (player.targetX - player.x) * 0.25;
+
+        // Process vertical translation calculations
+        if (player.jumping) {
+            player.y += player.velocity * speedHackMultiplier; // Jump matches speed hack velocity
+            player.velocity += player.gravity * speedHackMultiplier;
+            if (player.y >= 0) {
+                player.y = 0;
+                player.jumping = false;
+            }
+        }
+
+        // Render Character Mesh
+        ctx.fillStyle = '#00f2ff';
+        ctx.shadowColor = '#00f2ff';
+        ctx.shadowBlur = 15;
+        const playerY = (canvas.height * 0.8) + player.y;
+        ctx.fillRect(player.x, playerY, player.width, player.height);
+        ctx.shadowBlur = 0;
+
+        // Process Tiger Auto Pilot Module
+        if (isTigerRunning) {
+            tigerTimer += speedHackMultiplier;
+            if (tigerTimer > 35) {
+                player.lane = player.lane === 1 ? (Math.random() > 0.5 ? 0 : 2) : 1;
+                player.targetX = tracks.getLaneX(player.lane);
+                tigerTimer = 0;
+            }
+        }
+
+        // Obstacle Vector Generation Thread
+        hazardSpawnTimer += speedHackMultiplier;
+        if (hazardSpawnTimer > 80) {
+            spawnObstacle();
+            hazardSpawnTimer = 0;
+        }
+
+        // Process active canvas arrays
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+            let obs = obstacles[i];
+            obs.y += frameVelocity; // Injected Speed Multiplier
+
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowColor = '#00ff88';
+            ctx.shadowBlur = 10;
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+            ctx.shadowBlur = 0;
+
+            // Clear frame bounds and score tracking points
+            if (obs.y > canvas.height) {
+                obstacles.splice(i, 1);
+                gameScore += Math.round(10 * speedHackMultiplier);
+                continue;
+            }
+
+            // Real-time block contact checks
+            if (obs.lane === player.lane && !player.jumping && obs.y + obs.height >= playerY && obs.y <= playerY + player.height) {
+                gameScore = 0;
+                obstacles = [];
+                break;
+            }
+        }
+
+        // Draw HUD Layout
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 22px monospace';
+        ctx.fillText(`SCORE: ${gameScore}`, 40, 50);
+
+        requestAnimationFrame(engineTick);
+    }
+
+    engineTick();
 </script>
 
 </body>
