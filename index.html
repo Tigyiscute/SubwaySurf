@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Hub | Monaco</title>
+    <title>Tigy Coding | Monaco Matrix</title>
     <style>
-        /* Smooth black base */
+        /* Smooth Black Base Structure */
         body, html {
             margin: 0; padding: 0; height: 100%;
             background: #09090b;
             overflow: hidden;
             font-family: system-ui, -apple-system, sans-serif;
+            color: #fff;
+            user-select: none;
         }
 
-        /* Ambient blue-to-green gradient backdrop glow */
+        /* Ambient blue-to-green backdrop gradient glow */
         .glow-overlay {
             position: fixed;
             inset: 0;
@@ -23,46 +25,69 @@
             pointer-events: none;
         }
 
-        /* Black Glassmorphism Header Panel */
-        header {
+        /* Black Glassmorphism Mod Control Panel Dashboard */
+        #mod-dashboard {
             position: absolute;
             top: 20px; left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 15, 18, 0.65);
+            background: rgba(15, 15, 18, 0.7);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border: 1px solid rgba(0, 242, 255, 0.25);
-            padding: 10px 30px;
+            padding: 10px 25px;
             border-radius: 50px;
-            color: #00f2ff;
             z-index: 100;
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-            pointer-events: none; /* Lets you click through it if needed */
         }
 
-        .status-dot {
-            width: 8px; height: 8px;
-            background: #00ff88;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #00ff88;
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #00f2ff;
         }
 
-        /* Fullscreen Game Frame */
+        /* Neon Tiger Toggle Interface Button */
+        .tiger-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Active macro glowing states */
+        .tiger-toggle-btn.macro-active {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: #00ff88;
+            color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+
         .game-frame {
             width: 100vw;
             height: 100vh;
             border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
             z-index: 2;
             background: transparent;
         }
 
-        /* Focus Capture Overlay */
+        /* Interaction Gate Layer */
         #focus-gate {
             position: fixed;
             inset: 0;
@@ -77,13 +102,11 @@
         .glass-card {
             background: rgba(20, 20, 25, 0.6);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 45px;
             border-radius: 28px;
             text-align: center;
             box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-            max-width: 380px;
         }
 
         .action-btn {
@@ -94,18 +117,7 @@
             font-weight: 800;
             font-size: 1.25rem;
             border: none;
-            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .glass-card:hover .action-btn {
-            transform: scale(1.04);
-            box-shadow: 0 0 35px rgba(0, 242, 255, 0.5);
-        }
-
-        .caption {
-            color: #71717a; margin-top: 18px; font-size: 0.85rem; line-height: 1.4;
         }
     </style>
 </head>
@@ -113,37 +125,112 @@
 
 <div class="glow-overlay"></div>
 
-<div id="focus-gate" onclick="maximizeEngine()">
+<div id="focus-gate" onclick="startEngine()">
     <div class="glass-card">
         <h1 style="color: #fff; margin: 0 0 8px 0; font-size: 2.2rem; letter-spacing: -0.5px;">SUBWAY SURFERS</h1>
-        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">MONACO EDITION</p>
-        <button class="action-btn">PLAY NOW</button>
-        <p class="caption">Clicking links keyboard inputs directly to the engine workspace layout.</p>
+        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">🐯 TIGER MACRO EDITION</p>
+        <button class="action-btn">LAUNCH MATRIX</button>
     </div>
 </div>
 
-<header>
-    <div class="status-dot"></div>
-    <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">FULL ENGINE WINDOW LAYER</span>
-</header>
+<div id="mod-dashboard">
+    <div class="status-container">
+        <span style="color: #71717a;">Binds:</span> <span>WASD + Q</span>
+    </div>
+    <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.15);"></div>
+    <button id="tigerBtn" class="tiger-toggle-btn" onclick="toggleTigerMacro()">
+        <span>🐯</span> Tiger Spam: <span id="statusText" style="font-weight:800;">OFF</span>
+    </button>
+</div>
 
-<iframe id="gameContainer" class="game-frame" src="https://subwaysurferscity.io/subway-surfers-monaco.embed" scrolling="none"></iframe>
+<iframe id="gameViewport" class="game-frame" src="https://subwaysurferscity.io/subway-surfers-monaco.embed" scrolling="none"></iframe>
 
 <script>
-    function maximizeEngine() {
-        // Hide the startup blocking screen
+    let macroIntervalId = null;
+    let isMacroRunning = false;
+    let alternateFlag = false;
+
+    function startEngine() {
         document.getElementById('focus-gate').style.display = 'none';
-        
-        // Target the embed frame window
-        const frame = document.getElementById('gameContainer');
-        
-        // Push deep structural focus directly onto the game window canvas
-        frame.focus();
-        
-        // Re-verify focus loop link inside window trees
-        window.focus();
-        frame.contentWindow.focus();
+        document.getElementById('gameViewport').focus();
     }
+
+    // Toggle logic function mapped to both UI button click and keyboard Q key press
+    function toggleTigerMacro() {
+        const btn = document.getElementById('tigerBtn');
+        const statusText = document.getElementById('statusText');
+        const frameWindow = document.getElementById('gameViewport').contentWindow;
+
+        isMacroRunning = !isMacroRunning;
+
+        if (isMacroRunning) {
+            btn.classList.add('macro-active');
+            statusText.innerText = "ON";
+
+            // Automated micro-loop intervals targeting frame content blocks
+            macroIntervalId = setInterval(() => {
+                // Alternates left (37) and right (39) vectors to execute the infinite spam behavior
+                let targetKeyCode = alternateFlag ? 37 : 39;
+                alternateFlag = !alternateFlag;
+
+                // Send layout inputs directly to internal iframe tree targets
+                try {
+                    frameWindow.postMessage({ type: 'keydown', keyCode: targetKeyCode }, '*');
+                } catch (e) {}
+
+                // Fallback document-root keyboard event simulator dispatches
+                const loopEvent = new KeyboardEvent('keydown', {
+                    keyCode: targetKeyCode,
+                    which: targetKeyCode,
+                    bubbles: true
+                });
+                document.dispatchEvent(loopEvent);
+            }, 50); // Fires cycle updates cleanly every 50ms
+        } else {
+            // Clean interface loop teardowns
+            clearInterval(macroIntervalId);
+            macroIntervalId = null;
+            btn.classList.remove('macro-active');
+            statusText.innerText = "OFF";
+        }
+        
+        // Re-lock window control tracking anchors
+        document.getElementById('gameViewport').focus();
+    }
+
+    // Capture standard system keys globally
+    window.addEventListener("keydown", function(e) {
+        const stroke = e.key.toLowerCase();
+        
+        // Check for dedicated Q macro toggle event key
+        if (stroke === 'q') {
+            e.preventDefault();
+            toggleTigerMacro();
+            return;
+        }
+
+        // Keep core hardware WASD inputs translated cleanly down into standard navigation vectors
+        let virtualKeyCode;
+        if (stroke === 'w') virtualKeyCode = 38; // Up
+        if (stroke === 's') virtualKeyCode = 40; // Down
+        if (stroke === 'a') virtualKeyCode = 37; // Left
+        if (stroke === 'd') virtualKeyCode = 39; // Right
+
+        if (virtualKeyCode) {
+            e.preventDefault();
+            const destinationFrame = document.getElementById('gameViewport').contentWindow;
+            try {
+                destinationFrame.postMessage({ type: 'keydown', keyCode: virtualKeyCode }, '*');
+            } catch (err) {}
+
+            const trackingEvent = new KeyboardEvent('keydown', {
+                keyCode: virtualKeyCode,
+                which: virtualKeyCode,
+                bubbles: true
+            });
+            document.dispatchEvent(trackingEvent);
+        }
+    }, true);
 </script>
 
 </body>
