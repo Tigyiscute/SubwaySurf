@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tigy Coding | Subway Surfers Monaco</title>
+    <title>Arcade Hub | Monaco</title>
     <style>
         /* Smooth black base */
         body, html {
             margin: 0; padding: 0; height: 100%;
             background: #09090b;
             overflow: hidden;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
-        /* Ambient blue-to-green gradient background glow */
+        /* Ambient blue-to-green gradient backdrop glow */
         .glow-overlay {
             position: fixed;
             inset: 0;
@@ -40,6 +40,7 @@
             gap: 15px;
             align-items: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            pointer-events: none; /* Lets you click through it if needed */
         }
 
         .status-dot {
@@ -49,16 +50,19 @@
             box-shadow: 0 0 12px #00ff88;
         }
 
+        /* Fullscreen Game Frame */
         .game-frame {
             width: 100vw;
             height: 100vh;
             border: none;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             z-index: 2;
             background: transparent;
         }
 
-        /* Focus Capture Gate */
+        /* Focus Capture Overlay */
         #focus-gate {
             position: fixed;
             inset: 0;
@@ -92,7 +96,7 @@
             border: none;
             letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s ease;
         }
 
         .glass-card:hover .action-btn {
@@ -109,60 +113,37 @@
 
 <div class="glow-overlay"></div>
 
-<div id="focus-gate" onclick="startEngine()">
+<div id="focus-gate" onclick="maximizeEngine()">
     <div class="glass-card">
         <h1 style="color: #fff; margin: 0 0 8px 0; font-size: 2.2rem; letter-spacing: -0.5px;">SUBWAY SURFERS</h1>
         <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">MONACO EDITION</p>
-        <button class="action-btn">LAUNCH GAME</button>
-        <p class="caption">Clicking locks input focus, pinning your WASD keys directly to the live game embed window.</p>
+        <button class="action-btn">PLAY NOW</button>
+        <p class="caption">Clicking links keyboard inputs directly to the engine workspace layout.</p>
     </div>
 </div>
 
 <header>
     <div class="status-dot"></div>
-    <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">WASD CONFIGURATION INJECTED</span>
+    <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">FULL ENGINE WINDOW LAYER</span>
 </header>
 
 <iframe id="gameContainer" class="game-frame" src="https://subwaysurferscity.io/subway-surfers-monaco.embed" scrolling="none"></iframe>
 
 <script>
-    function startEngine() {
+    function maximizeEngine() {
+        // Hide the startup blocking screen
         document.getElementById('focus-gate').style.display = 'none';
+        
+        // Target the embed frame window
         const frame = document.getElementById('gameContainer');
+        
+        // Push deep structural focus directly onto the game window canvas
         frame.focus();
+        
+        // Re-verify focus loop link inside window trees
+        window.focus();
+        frame.contentWindow.focus();
     }
-
-    // Intercept WASD presses on parent layer and route them as Arrow Events
-    window.addEventListener("keydown", function(e) {
-        const inputKey = e.key.toLowerCase();
-        let targetKeyCode;
-
-        if (inputKey === 'w') targetKeyCode = 38; // Up
-        if (inputKey === 's') targetKeyCode = 40; // Down
-        if (inputKey === 'a') targetKeyCode = 37; // Left
-        if (inputKey === 'd') targetKeyCode = 39; // Right
-
-        if (targetKeyCode) {
-            e.preventDefault(); // Prevents layout shifting during runs
-
-            const innerFrame = document.getElementById('gameContainer').contentWindow;
-
-            // Direct content window broadcast channel
-            try {
-                innerFrame.postMessage({ type: 'keydown', keyCode: targetKeyCode }, '*');
-            } catch (err) {}
-
-            // Create and distribute a perfect local browser KeyboardEvent 
-            const directEvent = new KeyboardEvent('keydown', {
-                keyCode: targetKeyCode,
-                which: targetKeyCode,
-                code: targetKeyCode === 38 ? 'ArrowUp' : targetKeyCode === 40 ? 'ArrowDown' : targetKeyCode === 37 ? 'ArrowLeft' : 'ArrowRight',
-                bubbles: true,
-                cancelable: true
-            });
-            document.dispatchEvent(directEvent);
-        }
-    }, true);
 </script>
 
 </body>
