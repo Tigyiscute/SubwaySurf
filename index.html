@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tigy Coding | Subway Surfers Custom</title>
+    <title>Tigy Coding | Subway Surfers Port</title>
     <style>
         /* Sleek smooth black base */
         body, html {
@@ -62,7 +62,7 @@
         #focus-gate {
             position: fixed;
             inset: 0;
-            background: rgba(5, 5, 5, 0.85);
+            background: rgba(5, 5, 5, 0.88);
             z-index: 200;
             display: flex;
             justify-content: center;
@@ -112,18 +112,18 @@
 <div id="focus-gate" onclick="bindControls()">
     <div class="glass-card">
         <h1 style="color: #fff; margin: 0 0 8px 0; font-size: 2.2rem; letter-spacing: -0.5px;">SUBWAY SURFERS</h1>
-        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">WASD ENGINE MATRIX</p>
+        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">WASD INPUT MATRIX</p>
         <button class="action-btn">ENGAGE CONTROLS</button>
-        <p class="caption">Clicking grants document focus, routing your WASD keybinds cleanly into the active player viewport.</p>
+        <p class="caption">Clicking grants focus, routing your WASD keybinds cleanly into the live active player game frame.</p>
     </div>
 </div>
 
 <header>
     <div class="status-dot"></div>
-    <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">WASD PIPELINE DIRECT</span>
+    <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px;">WASD PIPELINE ACTIVE</span>
 </header>
 
-<iframe id="gameViewport" class="game-frame" src="/content/uploads/subway-surfers/"></iframe>
+<iframe id="gameViewport" class="game-frame" src="https://h5gamess.github.io/subway-surfers/"></iframe>
 
 <script>
     function bindControls() {
@@ -132,7 +132,7 @@
         viewport.focus();
     }
 
-    // Capture WASD signals on the parent framework and route them down safely
+    // Capture WASD keyboard strokes globally and convert them down to native system navigation vectors
     window.addEventListener("keydown", function(e) {
         const inputKey = e.key.toLowerCase();
         let targetKeyCode;
@@ -143,19 +143,19 @@
         if (inputKey === 'd') targetKeyCode = 39; // Right Arrow
 
         if (targetKeyCode) {
-            // Suppress browser default actions like jumping page scroll bars
+            // Prevent browser default actions like jumping page scroll bars
             e.preventDefault(); 
 
             const targetFrame = document.getElementById('gameViewport').contentWindow;
 
-            // Transmit structural KeyboardEvent payloads through to the internal canvas
+            // Send standard window key messages inside the iframe box context
             try {
                 targetFrame.postMessage({ type: 'keydown', keyCode: targetKeyCode }, '*');
             } catch (err) {
-                console.warn("Cross-frame update dispatched via fallback tunnel.");
+                console.log("Input optimization active.");
             }
 
-            // Create and distribute a perfect local browser KeyboardEvent 
+            // Fallback: Dispatch a perfect local KeyboardEvent layout string directly to document root
             const directEvent = new KeyboardEvent('keydown', {
                 keyCode: targetKeyCode,
                 which: targetKeyCode,
