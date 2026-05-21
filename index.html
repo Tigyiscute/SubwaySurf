@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tigy Coding | Monaco Matrix</title>
+    <title>Tigy Coding | Monaco Matrix Mod</title>
     <style>
-        /* Smooth Black Base Structure */
+        /* Smooth Black Premium Base */
         body, html {
             margin: 0; padding: 0; height: 100%;
             background: #09090b;
@@ -15,7 +15,7 @@
             user-select: none;
         }
 
-        /* Ambient blue-to-green backdrop gradient glow */
+        /* Ambient blue-to-green gradient backdrop glow */
         .glow-overlay {
             position: fixed;
             inset: 0;
@@ -25,43 +25,70 @@
             pointer-events: none;
         }
 
-        /* Black Glassmorphism Mod Control Panel Dashboard */
+        /* Premium Black Glassmorphism Mod Control Panel Dashboard */
         #mod-dashboard {
-            position: absolute;
+            position: fixed;
             top: 20px; left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 15, 18, 0.7);
+            background: rgba(15, 15, 18, 0.75);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border: 1px solid rgba(0, 242, 255, 0.25);
-            padding: 10px 25px;
+            padding: 12px 30px;
             border-radius: 50px;
             z-index: 100;
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .status-container {
+        .control-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
+            gap: 12px;
+            font-size: 0.85rem;
             font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
             color: #00f2ff;
         }
 
-        /* Neon Tiger Toggle Interface Button */
+        /* Custom Neon Hack Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 50px;
+            outline: none;
+            width: 110px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #00f2ff;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00f2ff;
+        }
+
+        .multiplier-display {
+            font-family: monospace;
+            color: #00ff88;
+            min-width: 35px;
+        }
+
+        /* Neon Tiger Toggle Button */
         .tiger-toggle-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 8px 20px;
+            padding: 8px 22px;
             border-radius: 30px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.85rem;
             cursor: pointer;
             display: flex;
@@ -70,12 +97,11 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Active macro glowing states */
         .tiger-toggle-btn.macro-active {
             background: rgba(0, 255, 136, 0.15);
             border-color: #00ff88;
             color: #00ff88;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
         }
 
         .game-frame {
@@ -87,11 +113,11 @@
             background: transparent;
         }
 
-        /* Interaction Gate Layer */
+        /* Interaction Entry Gate */
         #focus-gate {
             position: fixed;
             inset: 0;
-            background: rgba(5, 5, 5, 0.9);
+            background: rgba(5, 5, 5, 0.92);
             z-index: 200;
             display: flex;
             justify-content: center;
@@ -118,6 +144,11 @@
             font-size: 1.25rem;
             border: none;
             cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -128,93 +159,116 @@
 <div id="focus-gate" onclick="startEngine()">
     <div class="glass-card">
         <h1 style="color: #fff; margin: 0 0 8px 0; font-size: 2.2rem; letter-spacing: -0.5px;">SUBWAY SURFERS</h1>
-        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">🐯 TIGER MACRO EDITION</p>
-        <button class="action-btn">LAUNCH MATRIX</button>
+        <p style="color: #00ff88; margin: 0 0 35px 0; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">🐯 SPEED INJECTOR PRO</p>
+        <button class="action-btn">LAUNCH HUB</button>
     </div>
 </div>
 
 <div id="mod-dashboard">
-    <div class="status-container">
-        <span style="color: #71717a;">Binds:</span> <span>WASD + Q</span>
-    </div>
-    <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.15);"></div>
-    <button id="tigerBtn" class="tiger-toggle-btn" onclick="toggleTigerMacro()">
-        <span>🐯</span> Tiger Spam: <span id="statusText" style="font-weight:800;">OFF</span>
+    <button id="tigerBtn" class="tiger-toggle-btn" onclick="toggleTigerHack()">
+        <span>🐯</span> Tiger Mode: <span id="statusText" style="font-weight:900;">OFF</span>
     </button>
+    
+    <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.15);"></div>
+    
+    <div class="control-group">
+        <label for="hackInterval">Hack Clock:</label>
+        <input type="range" id="hackInterval" min="1" max="10" step="1" value="5" oninput="adjustHackFrequency(this.value)">
+        <span id="hzDisplay" class="multiplier-display">5x</span>
+    </div>
 </div>
 
 <iframe id="gameViewport" class="game-frame" src="https://subwaysurferscity.io/subway-surfers-monaco.embed" scrolling="none"></iframe>
 
 <script>
-    let macroIntervalId = null;
-    let isMacroRunning = false;
-    let alternateFlag = false;
+    let hackIntervalId = null;
+    let isHackRunning = false;
+    let switchSide = false;
+    let systemPulseRate = 50; // Milliseconds per cycle block
 
     function startEngine() {
         document.getElementById('focus-gate').style.display = 'none';
         document.getElementById('gameViewport').focus();
     }
 
-    // Toggle logic function mapped to both UI button click and keyboard Q key press
-    function toggleTigerMacro() {
+    function adjustHackFrequency(val) {
+        // Maps the slider multiplier directly into execution speeds
+        systemPulseRate = Math.round(250 / parseInt(val));
+        document.getElementById('hzDisplay').innerText = val + 'x';
+        
+        // Live recycle if thread is currently spinning
+        if (isHackRunning) {
+            stopThreadLoop();
+            startThreadLoop();
+        }
+    }
+
+    function toggleTigerHack() {
+        isHackRunning = !isHackRunning;
         const btn = document.getElementById('tigerBtn');
         const statusText = document.getElementById('statusText');
-        const frameWindow = document.getElementById('gameViewport').contentWindow;
 
-        isMacroRunning = !isMacroRunning;
-
-        if (isMacroRunning) {
+        if (isHackRunning) {
             btn.classList.add('macro-active');
             statusText.innerText = "ON";
-
-            // Automated micro-loop intervals targeting frame content blocks
-            macroIntervalId = setInterval(() => {
-                // Alternates left (37) and right (39) vectors to execute the infinite spam behavior
-                let targetKeyCode = alternateFlag ? 37 : 39;
-                alternateFlag = !alternateFlag;
-
-                // Send layout inputs directly to internal iframe tree targets
-                try {
-                    frameWindow.postMessage({ type: 'keydown', keyCode: targetKeyCode }, '*');
-                } catch (e) {}
-
-                // Fallback document-root keyboard event simulator dispatches
-                const loopEvent = new KeyboardEvent('keydown', {
-                    keyCode: targetKeyCode,
-                    which: targetKeyCode,
-                    bubbles: true
-                });
-                document.dispatchEvent(loopEvent);
-            }, 50); // Fires cycle updates cleanly every 50ms
+            startThreadLoop();
         } else {
-            // Clean interface loop teardowns
-            clearInterval(macroIntervalId);
-            macroIntervalId = null;
             btn.classList.remove('macro-active');
             statusText.innerText = "OFF";
+            stopThreadLoop();
         }
-        
-        // Re-lock window control tracking anchors
         document.getElementById('gameViewport').focus();
     }
 
-    // Capture standard system keys globally
-    window.addEventListener("keydown", function(e) {
-        const stroke = e.key.toLowerCase();
+    function startThreadLoop() {
+        const frameWindow = document.getElementById('gameViewport').contentWindow;
         
-        // Check for dedicated Q macro toggle event key
-        if (stroke === 'q') {
+        hackIntervalId = setInterval(() => {
+            // Emulates shifting variables back and forth rapidly to trick execution states
+            let targetVector = switchSide ? 37 : 39;
+            switchSide = !switchSide;
+
+            try {
+                // Injects simulated hardware states down into the iframe environment window
+                frameWindow.postMessage({ type: 'keydown', keyCode: targetVector }, '*');
+                frameWindow.postMessage({ type: 'keypress', keyCode: targetVector }, '*');
+            } catch (err) {}
+
+            // Global root layout thread fallback force injection
+            const corePulseEvent = new KeyboardEvent('keydown', {
+                keyCode: targetVector,
+                which: targetVector,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(corePulseEvent);
+        }, systemPulseRate);
+    }
+
+    function stopThreadLoop() {
+        if (hackIntervalId) {
+            clearInterval(hackIntervalId);
+            hackIntervalId = null;
+        }
+    }
+
+    // Capture standard control mappings cleanly
+    window.addEventListener("keydown", function(e) {
+        const keyStroke = e.key.toLowerCase();
+        
+        // Q Toggles the Entire Injector Process Loop
+        if (keyStroke === 'q') {
             e.preventDefault();
-            toggleTigerMacro();
+            toggleTigerHack();
             return;
         }
 
         // Keep core hardware WASD inputs translated cleanly down into standard navigation vectors
         let virtualKeyCode;
-        if (stroke === 'w') virtualKeyCode = 38; // Up
-        if (stroke === 's') virtualKeyCode = 40; // Down
-        if (stroke === 'a') virtualKeyCode = 37; // Left
-        if (stroke === 'd') virtualKeyCode = 39; // Right
+        if (keyStroke === 'w') virtualKeyCode = 38; // Up
+        if (keyStroke === 's') virtualKeyCode = 40; // Down
+        if (keyStroke === 'a') virtualKeyCode = 37; // Left
+        if (keyStroke === 'd') virtualKeyCode = 39; // Right
 
         if (virtualKeyCode) {
             e.preventDefault();
