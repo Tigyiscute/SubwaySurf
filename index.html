@@ -3,466 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Elite Remap Dashboard</title>
+    <title>Subway Surfers - Houston</title>
     <style>
-        /* Modern Glassmorphism & Premium Matte Black Theme */
-        :root {
-            --bg-main: #050507;
-            --glass-panel: rgba(11, 11, 14, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --accent-blue: #2563eb;
-            --accent-blue-glow: rgba(37, 99, 235, 0.4);
-            --accent-green: #10b981;
-            --accent-green-glow: rgba(16, 185, 129, 0.3);
-            --text-main: #f4f4f5;
-            --text-muted: #71717a;
-            --danger: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
+        body, html {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05), transparent 60%);
-            color: var(--text-main);
-            min-height: 100vh;
+            height: 100%;
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .workspace {
-            width: 100%;
-            max-width: 960px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .panel {
-            background: var(--glass-panel);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
         }
 
         header {
+            padding: 15px 25px;
+            background: #1f1f1f;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 16px;
-            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
-        h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
-
-        .telemetry-badges {
-            display: flex;
-            gap: 10px;
-        }
-
-        .badge {
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-muted);
-            border-radius: 999px;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffcc00;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            transition: all 0.3s ease;
+            letter-spacing: 2px;
         }
 
-        .badge.active-green {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--accent-green);
-            color: var(--accent-green);
-            box-shadow: 0 0 12px var(--accent-green-glow);
+        .controls-hint {
+            font-size: 0.9rem;
+            color: #aaa;
         }
 
-        .badge.active-blue {
-            background: rgba(37, 99, 235, 0.1);
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-            box-shadow: 0 0 12px var(--accent-blue-glow);
-        }
-
-        /* High-Performance Canvas Container viewport */
-        .game-viewport {
+        .game-container {
+            flex-grow: 1;
             position: relative;
-            width: 100%;
-            height: 540px;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #gameFrame {
+        iframe {
             width: 100%;
             height: 100%;
             border: none;
-            display: block;
         }
 
-        /* Configuration Grid controls layout */
-        .controls-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #e4e4e7;
-        }
-
-        .action-toggle {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .action-toggle:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .action-toggle.enabled {
-            background: var(--accent-blue);
-            color: #ffffff;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 16px var(--accent-blue-glow);
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        @media (max-width: 700px) {
-            .grid-layout {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .game-viewport {
-                height: 380px;
-            }
-        }
-
-        .bind-card {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .card-label {
-            font-size: 0.68rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #a1a1aa;
-        }
-
-        .key-input-trigger {
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--glass-border);
-            color: var(--accent-blue);
-            font-family: Menlo, Monaco, Consolas, monospace;
-            font-size: 1.1rem;
-            font-weight: 700;
+        /* Overlay to catch focus */
+        #focus-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 12px 0;
-            border-radius: 10px;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            text-align: center;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
+            z-index: 5;
+            transition: opacity 0.3s;
         }
 
-        .key-input-trigger:hover {
-            background: rgba(37, 99, 235, 0.08);
-            border-color: var(--accent-blue);
+        #focus-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .key-input-trigger.listening {
-            background: rgba(239, 68, 68, 0.08);
-            border-color: var(--danger);
-            color: var(--danger);
-            animation: capturePulse 1.4s infinite;
+        .btn-play {
+            padding: 15px 40px;
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        @keyframes capturePulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
+        .btn-play:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
 
-    <div class="workspace">
-        <div class="panel">
-            <header>
-                <h1>Subway Surfers Runtime Environment</h1>
-                <div class="telemetry-badges">
-                    <div class="badge" id="gamepadTelemetry">No Controller Found</div>
-                    <div class="badge" id="bindsTelemetry">Standard Inputs</div>
-                </div>
-            </header>
+<header>
+    <div class="logo">Subway Surfers: Houston</div>
+    <div class="controls-hint">Use <b>WASD</b> or <b>ARROWS</b> to Play</div>
+</header>
 
-            <div class="game-viewport">
-                <iframe 
-                    src="https://subway-surfers.cc/subway-surfers-games/saint-peterburg" 
-                    id="gameFrame"
-                    allow="autoplay; fullscreen; keyboard">
-                </iframe>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="controls-toolbar">
-                <span class="section-title">Mapping Profile Bindings</span>
-                <button class="action-toggle" id="toggleBindsBtn">Enable Custom Binds</button>
-            </div>
-
-            <div class="grid-layout">
-                <div class="bind-card">
-                    <span class="card-label">Jump (Up Arrow)</span>
-                    <button class="key-input-trigger" id="btn-jump" data-action="jump">W</button>
-                </div>
-                <div class="bind-card">
-                    <span class="card-label">Roll (Down Arrow)</span>
-                    <button class="key-input-trigger" id="btn-roll" data-action="roll">S</button>
-                </div>
-                <div class="bind-card">
-                    <span class="card-label">Move Left</span>
-                    <button class="key-input-trigger" id="btn-left" data-action="left">A</button>
-                </div>
-                <div class="bind-card">
-                    <span class="bind-card card-label">Move Right</span>
-                    <button class="key-input-trigger" id="btn-right" data-action="right">D</button>
-                </div>
-            </div>
-        </div>
+<div class="game-container">
+    <div id="focus-overlay">
+        <button class="btn-play" onclick="startGame()">CLICK TO PLAY</button>
     </div>
+    <iframe 
+        id="game-frame" 
+        src="https://yell0wsuit.page/assets/games/subway-surfers-unity/houston.html"
+        allow="autoplay; fullscreen"
+    ></iframe>
+</div>
 
-    <script>
-        let customBindsActive = false;
-        let activeSelectionBtn = null;
+<script>
+    const iframe = document.getElementById('game-frame');
+    const overlay = document.getElementById('focus-overlay');
 
-        // Default layout mapping configurations
-        const mappingProfile = {
-            jump: { key: 'w', code: 'KeyW', targetArrow: 'ArrowUp' },
-            roll: { key: 's', code: 'KeyS', targetArrow: 'ArrowDown' },
-            left: { key: 'a', code: 'KeyA', targetArrow: 'ArrowLeft' },
-            right: { key: 'd', code: 'KeyD', targetArrow: 'ArrowRight' }
-        };
+    function startGame() {
+        overlay.classList.add('hidden');
+        iframe.focus();
+    }
 
-        const toggleBindsBtn = document.getElementById('toggleBindsBtn');
-        const bindsTelemetry = document.getElementById('bindsTelemetry');
-        const gamepadTelemetry = document.getElementById('gamepadTelemetry');
-        const configTriggers = document.querySelectorAll('.key-input-trigger');
-        const gameFrame = document.getElementById('gameFrame');
-
-        // Master Remapping Initialization Switch
-        toggleBindsBtn.addEventListener('click', () => {
-            customBindsActive = !customBindsActive;
-            
-            if (customBindsActive) {
-                toggleBindsBtn.classList.add('enabled');
-                toggleBindsBtn.textContent = "Custom Binds Active";
-                bindsTelemetry.classList.add('active-blue');
-                bindsTelemetry.textContent = "Remap System On";
-                gameFrame.focus();
-            } else {
-                toggleBindsBtn.classList.remove('enabled');
-                toggleBindsBtn.textContent = "Enable Custom Binds";
-                bindsTelemetry.classList.remove('active-blue');
-                bindsTelemetry.textContent = "Standard Inputs";
-                
-                if (activeSelectionBtn) {
-                    activeSelectionBtn.classList.remove('listening');
-                    activeSelectionBtn = null;
-                }
-            }
-        });
-
-        // Track custom keys processing
-        configTriggers.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (activeSelectionBtn) {
-                    activeSelectionBtn.classList.remove('listening');
-                }
-                activeSelectionBtn = e.target;
-                activeSelectionBtn.classList.add('listening');
-                activeSelectionBtn.textContent = "...";
-            });
-        });
-
-        // Document Keyboard Event Listening Thread
-        window.addEventListener('keydown', (e) => {
-            // Configuration Assignment Logic
-            if (activeSelectionBtn) {
-                e.preventDefault();
-                const action = activeSelectionBtn.getAttribute('data-action');
-                
-                mappingProfile[action].key = e.key.toLowerCase();
-                mappingProfile[action].code = e.code;
-
-                activeSelectionBtn.textContent = e.key === " " ? "Space" : e.key;
-                activeSelectionBtn.classList.remove('listening');
-                activeSelectionBtn = null;
-                return;
-            }
-
-            // High-Speed Direct Redirect Execution 
-            if (customBindsActive) {
-                const capturedKey = e.key.toLowerCase();
-                const capturedCode = e.code;
-
-                for (const action in mappingProfile) {
-                    if (mappingProfile[action].key === capturedKey || mappingProfile[action].code === capturedCode) {
-                        e.preventDefault();
-                        executeSimulatedEngineKey('keydown', mappingProfile[action].targetArrow);
-                        break;
-                    }
-                }
-            }
-        });
-
-        window.addEventListener('keyup', (e) => {
-            if (customBindsActive) {
-                const capturedKey = e.key.toLowerCase();
-                const capturedCode = e.code;
-
-                for (const action in mappingProfile) {
-                    if (mappingProfile[action].key === capturedKey || mappingProfile[action].code === capturedCode) {
-                        executeSimulatedEngineKey('keyup', mappingProfile[action].targetArrow);
-                        break;
-                    }
-                }
-            }
-        });
-
-        // Cross-Origin Virtual Event Simulation Factory Engine
-        function executeSimulatedEngineKey(type, arrowVal) {
-            const virtualProps = {
-                key: arrowVal,
-                code: arrowVal,
-                keyCode: computeArrowKeyCode(arrowVal),
-                which: computeArrowKeyCode(arrowVal),
-                bubbles: true,
-                cancelable: true
-            };
-
-            const simulatedEvent = new KeyboardEvent(type, virtualProps);
-            
-            // Dispatches to execution layers across cross-origin interfaces smoothly
-            window.dispatchEvent(simulatedEvent);
-            if (gameFrame.contentWindow) {
-                gameFrame.contentWindow.dispatchEvent(simulatedEvent);
-            }
+    // Re-bind WASD to Arrow Keys via Event Dispatching
+    // Note: This works if the iframe is on the same domain. 
+    // Since it's cross-domain, we listen on the parent and 
+    // remind the user if they lose focus.
+    window.addEventListener('keydown', function(e) {
+        const key = e.key.toLowerCase();
+        
+        // If user is pressing WASD on the parent page, 
+        // they likely need to click the game again.
+        if (['w', 'a', 's', 'd'].includes(key)) {
+            console.log("WASD pressed on parent. Ensure iframe is focused.");
+            iframe.focus();
         }
+    });
 
-        function computeArrowKeyCode(name) {
-            switch(name) {
-                case 'ArrowLeft': return 37;
-                case 'ArrowUp': return 38;
-                case 'ArrowRight': return 39;
-                case 'ArrowDown': return 40;
-                default: return 0;
-            }
-        }
+    // Auto-focus logic
+    window.addEventListener('blur', () => {
+        // Optional: logic to detect if the user left the game
+    });
+</script>
 
-        /* ==================================================
-           HARDWARE CONTROLLER INTERFACE SUBSYSTEM (GAMEPAD API)
-           ==================================================
-        */
-        let inputControllerActive = null;
-        let previousControllerState = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
-
-        window.addEventListener("gamepadconnected", (e) => {
-            inputControllerActive = e.gamepad;
-            gamepadTelemetry.classList.add('active-green');
-            gamepadTelemetry.textContent = `Controller Connected!`;
-            console.log("Gamepad registered successfully:", e.gamepad.id);
-        });
-
-        window.addEventListener("gamepaddisconnected", (e) => {
-            inputControllerActive = null;
-            gamepadTelemetry.classList.remove('active-green');
-            gamepadTelemetry.textContent = "No Controller Found";
-        });
-
-        // High-Frequency Hardware Engine Poll Loop
-        function queryHardwareTelemetry() {
-            if (inputControllerActive) {
-                // Fetch the absolute newest frame instance states from browser layer
-                const activeGamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-                const controller = activeGamepads[inputControllerActive.index];
-
-                if (controller) {
-                    const currentControllerState = {
-                        // Standard Standard-Mapping D-Pad tracking indices: Up(12), Down(13), Left(14), Right(15)
-                        ArrowUp: controller.buttons[12]?.pressed || (controller.axes[1] < -0.5),
-                        ArrowDown: controller.buttons[13]?.pressed || (controller.axes[1] > 0.5),
-                        ArrowLeft: controller.buttons[14]?.pressed || (controller.axes[0] < -0.5),
-                        ArrowRight: controller.buttons[15]?.pressed || (controller.axes[0] > 0.5)
-                    };
-
-                    // Evaluate Delta Changes on States to Dispatch clean Press/Release actions
-                    for (const actionKey in currentControllerState) {
-                        const isPressedNow = currentControllerState[actionKey];
-                        const wasPressedBefore = previousControllerState[actionKey];
-
-                        if (isPressedNow && !wasPressedBefore) {
-                            // Button down event edge transition
-                            executeSimulatedEngineKey('keydown', actionKey);
-                        } else if (!isPressedNow && wasPressedBefore) {
-                            // Button up event edge transition
-                            executeSimulatedEngineKey('keyup', actionKey);
-                        }
-                    }
-
-                    // Cache current state profiles for next processing tick loop comparisons
-                    previousControllerState = currentControllerState;
-                }
-            }
-            requestAnimationFrame(queryHardwareTelemetry);
-        }
-
-        // Start Hardware Frame Thread
-        requestAnimationFrame(queryHardwareTelemetry);
-    </script>
 </body>
 </html>
