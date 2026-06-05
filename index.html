@@ -2,306 +2,289 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tigy Coding | Native Speed Hack Port</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LiveSplit Style Timer + Subway Surfers</title>
     <style>
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: #09090b;
-            overflow: hidden;
-            font-family: system-ui, -apple-system, sans-serif;
-            color: #fff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             user-select: none;
         }
-
-        /* Ambient blue-to-green gradient backdrop glow */
-        .glow-overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.15), transparent 45%),
-                        radial-gradient(circle at 85% 85%, rgba(0, 255, 136, 0.12), transparent 50%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Black Glassmorphic Mod Menu Control Dashboard */
-        #mod-dashboard {
-            position: fixed;
-            top: 20px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 15, 18, 0.75);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(0, 242, 255, 0.25);
-            padding: 12px 30px;
-            border-radius: 50px;
-            z-index: 100;
+        body {
+            background: #000000;
+            font-family: 'Courier New', 'Fira Code', 'Consolas', monospace;
             display: flex;
-            gap: 25px;
+            flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            min-height: 100vh;
+            padding: 8px;
         }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #00f2ff;
+        /* LiveSplit classic look: black background, neon green monospace */
+        .livesplit-container {
+            max-width: 550px;
+            width: 100%;
+            background: #000000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px #00ff00, 0 0 0 3px #000000;
         }
-
-        /* Neon Speed Slider */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.08);
-            height: 6px;
-            border-radius: 50px;
-            outline: none;
-            width: 120px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, #00f2ff, #00ff88);
-            cursor: pointer;
-            box-shadow: 0 0 10px #00ff88;
-        }
-
-        .multiplier-display {
-            font-family: monospace;
-            color: #00ff88;
-            min-width: 35px;
-            font-weight: bold;
-        }
-
-        .tiger-toggle-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .tiger-toggle-btn.macro-active {
-            background: rgba(0, 255, 136, 0.15);
-            border-color: #00ff88;
-            color: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-        }
-
-        #gameCanvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
+        /* Game area with 16:9 aspect */
+        .game-wrapper {
             position: relative;
-            z-index: 5;
+            width: 100%;
+            background: #000;
+            border-bottom: 2px solid #00ff00;
+        }
+        .game-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+        /* LiveSplit Timer Panel - exact style */
+        .timer-panel {
+            background: #000000;
+            padding: 12px 16px;
+            border-bottom: 1px solid #00ff00;
+        }
+        .timer-display {
+            text-align: center;
+            font-size: 56px;
+            font-weight: 900;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            letter-spacing: 4px;
+            color: #00ff00;
+            background: #000000;
+            text-shadow: 0 0 2px #00ff00;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        .split-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #00aa00;
+            font-family: monospace;
+            border-top: 1px dashed #00ff0033;
+            padding-top: 8px;
+        }
+        /* LiveSplit style buttons */
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 12px 16px;
+            background: #000000;
+            border-bottom: 1px solid #00ff00;
+        }
+        .ls-button {
+            background: #000000;
+            border: 1.5px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px 20px;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: all 0.05s linear;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .ls-button:active {
+            background: #00ff00;
+            color: #000000;
+            transform: scale(0.97);
+        }
+        /* Hotkey bar */
+        .hotkey-bar {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 10px 16px;
+            background: #000000;
+            font-size: 12px;
+            font-family: monospace;
+            color: #00aa00;
+            border-top: 1px solid #00ff00;
+        }
+        .hotkey {
+            background: #0a0a0a;
+            padding: 4px 10px;
+            border: 1px solid #00ff00;
+            font-weight: bold;
+            color: #00ff00;
+            font-size: 11px;
+        }
+        .info-text {
+            text-align: center;
+            font-size: 9px;
+            color: #008800;
+            padding: 8px;
+            background: #000;
+            font-family: monospace;
+        }
+        @media (max-width: 600px) {
+            .timer-display { font-size: 42px; letter-spacing: 2px; }
+            .ls-button { padding: 6px 14px; font-size: 12px; }
+            .hotkey-bar { gap: 12px; flex-wrap: wrap; }
+        }
+        /* LiveSplit "splits" simulation */
+        .segment {
+            font-size: 10px;
+            color: #00aa00;
+            background: #050505;
+            padding: 2px 6px;
         }
     </style>
 </head>
 <body>
+<div class="livesplit-container">
+    <!-- Game iframe -->
+    <div class="game-wrapper">
+        <div class="game-frame">
+            <iframe id="gameIframe" src="https://ss.randomkzn.com/barcelona" allowfullscreen></iframe>
+        </div>
+    </div>
 
-<div class="glow-overlay"></div>
+    <!-- LiveSplit Timer -->
+    <div class="timer-panel">
+        <div class="timer-display" id="timerDisplay">00:00.00</div>
+        <div class="split-info">
+            <span>▶ CURRENT SEGMENT</span>
+            <span>🏆 SUBWAY SURFERS</span>
+        </div>
+    </div>
 
-<div id="mod-dashboard">
-    <button id="tigerBtn" class="tiger-toggle-btn" onclick="toggleTigerHack()">
-        <span>🐯</span> Tiger Mode: <span id="statusText" style="font-weight:900;">OFF</span>
-    </button>
-    
-    <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.15);"></div>
-    
-    <div class="control-group">
-        <label for="speedSlider">SPEED MULTIPLIER:</label>
-        <input type="range" id="speedSlider" min="0.5" max="5.0" step="0.1" value="1.0" oninput="injectSpeedHack(this.value)">
-        <span id="multiplierValue" class="multiplier-display">1.0x</span>
+    <!-- Controls matching LiveSplit theme -->
+    <div class="controls">
+        <button class="ls-button" id="startSplitBtn">▶ START</button>
+        <button class="ls-button" id="pauseSplitBtn">⏸ PAUSE</button>
+        <button class="ls-button" id="resetSplitBtn">⟳ RESET</button>
+    </div>
+
+    <!-- Hotkey bar like Livesplit's key hints -->
+    <div class="hotkey-bar">
+        <span><span class="hotkey">T</span> Start / Pause</span>
+        <span><span class="hotkey">R</span> Reset Timer</span>
+        <span><span class="hotkey">F5</span> Reload Game</span>
+    </div>
+    <div class="info-text">
+        ⌨️ KEYBINDS ACTIVE | LIVESPLIT STYLE | MOBILE FRIENDLY
     </div>
 </div>
 
-<canvas id="gameCanvas"></canvas>
-
 <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    // ========== LIVESPLIT STYLE TIMER ==========
+    let timerRunning = false;
+    let startTime = 0;
+    let accumulatedTime = 0;
+    let timerInterval = null;
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startBtn = document.getElementById('startSplitBtn');
+    const pauseBtn = document.getElementById('pauseSplitBtn');
+    const resetBtn = document.getElementById('resetSplitBtn');
 
-    function resizeViewport() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeViewport);
-    resizeViewport();
-
-    // SPEED HACK CORE CORE VARIABLE
-    let speedHackMultiplier = 1.0;
-    let isTigerRunning = false;
-    let tigerTimer = 0;
-
-    function injectSpeedHack(val) {
-        speedHackMultiplier = parseFloat(val);
-        document.getElementById('multiplierValue').innerText = val + 'x';
-    }
-
-    function toggleTigerHack() {
-        isTigerRunning = !isTigerRunning;
-        document.getElementById('tigerBtn').classList.toggle('macro-active', isTigerRunning);
-        document.getElementById('statusText').innerText = isTigerRunning ? "ON" : "OFF";
+    // Format as MM:SS.cc (LiveSplit typical)
+    function formatTime(ms) {
+        let totalSeconds = Math.floor(ms / 1000);
+        let minutes = Math.floor(totalSeconds / 60);
+        let seconds = totalSeconds % 60;
+        let centiseconds = Math.floor((ms % 1000) / 10);
+        return `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}.${centiseconds.toString().padStart(2,'0')}`;
     }
 
-    // Engine Configurations
-    const player = {
-        x: 0, y: 0, width: 44, height: 65,
-        lane: 1, targetX: 0,
-        jumping: false, velocity: 0, gravity: 0.6
-    };
+    function updateTimerDisplay() {
+        if (timerRunning) {
+            const now = Date.now();
+            const elapsed = accumulatedTime + (now - startTime);
+            timerDisplay.textContent = formatTime(elapsed);
+        } else {
+            timerDisplay.textContent = formatTime(accumulatedTime);
+        }
+    }
 
-    const tracks = {
-        getLaneX: function(lane) {
-            const step = canvas.width / 4;
-            return (canvas.width / 2) - step + (lane * step) - (player.width / 2);
+    function timerTick() {
+        if (timerRunning) {
+            const now = Date.now();
+            const elapsed = accumulatedTime + (now - startTime);
+            timerDisplay.textContent = formatTime(elapsed);
         }
-    };
-    player.x = tracks.getLaneX(player.lane);
-    player.targetX = player.x;
+    }
 
-    let obstacles = [];
-    let baseSpeed = 6.5; 
-    let gameScore = 0;
-    let hazardSpawnTimer = 0;
+    function startTimer() {
+        if (timerRunning) return;
+        timerRunning = true;
+        startTime = Date.now();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(timerTick, 10);
+    }
 
-    // Standard Keyboard Route Mapping (WASD Supported natively)
-    window.addEventListener('keydown', function(e) {
-        const key = e.key.toLowerCase();
-        
-        if (key === 'q') {
-            toggleTigerHack();
-            return;
+    function pauseTimer() {
+        if (!timerRunning) return;
+        const now = Date.now();
+        accumulatedTime += (now - startTime);
+        timerRunning = false;
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function resetTimer() {
+        const wasRunning = timerRunning;
+        if (wasRunning) pauseTimer();
+        accumulatedTime = 0;
+        timerRunning = false;
+        updateTimerDisplay();
+        if (wasRunning) startTimer();
+        else updateTimerDisplay();
+    }
+
+    // Button events
+    startBtn.addEventListener('click', () => {
+        if (timerRunning) pauseTimer();
+        else startTimer();
+    });
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    // Keyboard shortcuts (LiveSplit style)
+    window.addEventListener('keydown', (e) => {
+        const key = e.key.toUpperCase();
+        // T -> Start/Pause toggle
+        if (key === 'T') {
+            e.preventDefault();
+            if (timerRunning) pauseTimer();
+            else startTimer();
         }
-        if ((key === 'a' || e.key === 'ArrowLeft') && player.lane > 0) {
-            player.lane--;
-            player.targetX = tracks.getLaneX(player.lane);
+        // R -> Reset
+        else if (key === 'R') {
+            e.preventDefault();
+            resetTimer();
         }
-        if ((key === 'd' || e.key === 'ArrowRight') && player.lane < 2) {
-            player.lane++;
-            player.targetX = tracks.getLaneX(player.lane);
-        }
-        if ((key === 'w' || e.key === ' ' || e.key === 'ArrowUp') && !player.jumping) {
-            player.jumping = true;
-            player.velocity = -14.5;
+        // F5 or Ctrl+R -> Reload game with confirmation
+        else if (key === 'F5' || (e.ctrlKey && key === 'R')) {
+            e.preventDefault();
+            if (confirm('⟳ Reload Subway Surfers? Timer will reset.')) {
+                resetTimer();
+                const iframe = document.getElementById('gameIframe');
+                iframe.src = iframe.src;
+            }
         }
     });
 
-    function spawnObstacle() {
-        const lane = Math.floor(Math.random() * 3);
-        obstacles.push({
-            x: tracks.getLaneX(lane) + (player.width - 42) / 2,
-            y: -80, width: 42, height: 45, lane: lane
-        });
-    }
-
-    // CORE NATIVE RUNTIME MATRIX LOOP
-    function engineTick() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // SPEED HACK APPLIED DIRECTLY HERE TO RUNTIME PHYSICS
-        let frameVelocity = baseSpeed * speedHackMultiplier;
-
-        // Draw Tracks
-        ctx.strokeStyle = 'rgba(0, 242, 255, 0.15)';
-        ctx.lineWidth = 3;
-        for(let i = 0; i < 3; i++) {
-            ctx.onprefix = true;
-            ctx.beginPath();
-            ctx.moveTo((canvas.width / 2) - (canvas.width / 4) + (i * (canvas.width / 4)), 0);
-            ctx.lineTo((canvas.width / 2) - (canvas.width / 4) + (i * (canvas.width / 4)), canvas.height);
-            ctx.stroke();
-        }
-
-        // Interpolate lateral movement smoothly
-        player.x += (player.targetX - player.x) * 0.25;
-
-        // Process vertical translation calculations
-        if (player.jumping) {
-            player.y += player.velocity * speedHackMultiplier; // Jump matches speed hack velocity
-            player.velocity += player.gravity * speedHackMultiplier;
-            if (player.y >= 0) {
-                player.y = 0;
-                player.jumping = false;
-            }
-        }
-
-        // Render Character Mesh
-        ctx.fillStyle = '#00f2ff';
-        ctx.shadowColor = '#00f2ff';
-        ctx.shadowBlur = 15;
-        const playerY = (canvas.height * 0.8) + player.y;
-        ctx.fillRect(player.x, playerY, player.width, player.height);
-        ctx.shadowBlur = 0;
-
-        // Process Tiger Auto Pilot Module
-        if (isTigerRunning) {
-            tigerTimer += speedHackMultiplier;
-            if (tigerTimer > 35) {
-                player.lane = player.lane === 1 ? (Math.random() > 0.5 ? 0 : 2) : 1;
-                player.targetX = tracks.getLaneX(player.lane);
-                tigerTimer = 0;
-            }
-        }
-
-        // Obstacle Vector Generation Thread
-        hazardSpawnTimer += speedHackMultiplier;
-        if (hazardSpawnTimer > 80) {
-            spawnObstacle();
-            hazardSpawnTimer = 0;
-        }
-
-        // Process active canvas arrays
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            let obs = obstacles[i];
-            obs.y += frameVelocity; // Injected Speed Multiplier
-
-            ctx.fillStyle = '#00ff88';
-            ctx.shadowColor = '#00ff88';
-            ctx.shadowBlur = 10;
-            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-            ctx.shadowBlur = 0;
-
-            // Clear frame bounds and score tracking points
-            if (obs.y > canvas.height) {
-                obstacles.splice(i, 1);
-                gameScore += Math.round(10 * speedHackMultiplier);
-                continue;
-            }
-
-            // Real-time block contact checks
-            if (obs.lane === player.lane && !player.jumping && obs.y + obs.height >= playerY && obs.y <= playerY + player.height) {
-                gameScore = 0;
-                obstacles = [];
-                break;
-            }
-        }
-
-        // Draw HUD Layout
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 22px monospace';
-        ctx.fillText(`SCORE: ${gameScore}`, 40, 50);
-
-        requestAnimationFrame(engineTick);
-    }
-
-    engineTick();
+    // Prevent touch context menu on long press for mobile
+    document.querySelectorAll('.ls-button').forEach(btn => {
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
+    });
 </script>
-
 </body>
 </html>
