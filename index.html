@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Speedrun Timer + Subway Surfers (LiveSplit Style)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Spectrum Bypass - tavvkkj.squareweb.app</title>
     <style>
         * {
             margin: 0;
@@ -11,201 +11,240 @@
             box-sizing: border-box;
         }
         body {
-            background: #000000;
-            font-family: 'Courier New', 'Fira Code', monospace;
+            background: #0a0a0a;
+            font-family: monospace;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 8px;
+            padding: 10px;
         }
-        /* Main container - website fully showing */
-        .wrapper {
-            width: 100%;
-            max-width: 550px;
-            background: #000;
-            border: 1px solid #00ff00;
-            border-radius: 8px;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #111;
+            border-radius: 16px;
+            border: 1px solid #0f0;
             overflow: hidden;
-            position: relative;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
         }
-        /* Game iframe - full visibility */
-        .game-container {
+        .header {
+            background: #1a1a1a;
+            padding: 12px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #0f0;
+        }
+        .logo {
+            color: #0f0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .url-bar {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        input {
+            flex: 1;
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        .bypass-methods {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .method-btn {
+            background: #222;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .method-btn.active {
+            background: #0f0;
+            color: #000;
+        }
+        .iframe-container {
             width: 100%;
-            aspect-ratio: 16 / 9;
+            height: 85vh;
             background: #000;
         }
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            display: block;
         }
-        /* Skinny timer bar exactly as requested */
-        .custom-timer-bar {
-            width: 100%;
-            background: #000000;
+        .status {
             padding: 8px 16px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            cursor: pointer;
-            font-family: Arial, sans-serif;
-            border-top: 1px solid #00ff00;
-            border-bottom: 1px solid #00ff00;
-        }
-        .custom-time-text {
-            font-weight: 900;
-            line-height: 1;
-            user-select: none;
-            display: flex;
-            align-items: baseline;
-            font-variant-numeric: tabular-nums;
-            background: linear-gradient(to bottom, #ffffff 15%, #7a7a7a 90%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .custom-main-num {
-            font-size: 28px;
-        }
-        .custom-sub-num {
-            font-size: 18px;
-            margin-left: 2px;
-        }
-        /* Hotkey hints */
-        .hotkey-bar {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 8px;
-            background: #0a0a0a;
-            font-size: 11px;
+            background: #1a1a1a;
             color: #0f0;
+            font-size: 11px;
             font-family: monospace;
-            border-top: 1px solid #00ff00;
-        }
-        .hotkey {
-            background: #000;
-            border: 1px solid #0f0;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-        .info {
+            border-top: 1px solid #0f0;
             text-align: center;
-            font-size: 9px;
-            color: #0a0;
-            padding: 6px;
-            background: #000;
         }
-        @media (max-width: 500px) {
-            .custom-main-num { font-size: 22px; }
-            .custom-sub-num { font-size: 14px; }
+        @media (max-width: 700px) {
+            .header { flex-direction: column; align-items: stretch; }
+            .url-bar { width: 100%; }
         }
     </style>
 </head>
 <body>
-<div class="wrapper">
-    <!-- Game iframe - FULLY SHOWING -->
-    <div class="game-container">
-        <iframe id="gameFrame" src="https://ss.randomkzn.com/barcelona" allowfullscreen></iframe>
-    </div>
-
-    <!-- Timer Bar (exactly as per system) -->
-    <div class="custom-timer-bar" id="timerBar">
-        <div class="custom-time-text">
-            <span class="custom-main-num" id="mainTime">0</span>
-            <span class="custom-sub-num" id="subTime">.00</span>
+<div class="container">
+    <div class="header">
+        <div class="logo">🔓 SPECTRUM BYPASS</div>
+        <div class="url-bar">
+            <input type="text" id="urlInput" value="https://tavvkkj.squareweb.app" placeholder="Enter URL...">
+            <button id="goBtn">LOAD</button>
+        </div>
+        <div class="bypass-methods">
+            <div class="method-btn" data-method="iframe">Standard Iframe</div>
+            <div class="method-btn" data-method="embed">Embed Src</div>
+            <div class="method-btn" data-method="object">Object Tag</div>
+            <div class="method-btn" data-method="fetch">Fetch & Inject</div>
         </div>
     </div>
-
-    <!-- Hotkey bar for reference -->
-    <div class="hotkey-bar">
-        <span><span class="hotkey">T</span> Start/Pause</span>
-        <span><span class="hotkey">Y</span> Reset</span>
-        <span><span class="hotkey">Click Timer</span> Start/Pause</span>
+    <div class="iframe-container" id="container">
+        <iframe id="targetFrame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-downloads" style="display:none;"></iframe>
     </div>
-    <div class="info">
-        ⌨️ KEYBINDS ACTIVE | TIMER OVERLAY | FULL GAME VISIBLE
+    <div class="status">
+        ⚡ Spectrum WiFi blocks squareweb.app? Use "Fetch & Inject" or "Object Tag" to bypass DNS filtering
     </div>
 </div>
 
 <script>
-    // ========== TIMER LOGIC (identical to requested system) ==========
-    let startTime = 0;
-    let elapsedTime = 0;
-    let timerInterval = null;
-    let isRunning = false;
+    const urlInput = document.getElementById('urlInput');
+    const goBtn = document.getElementById('goBtn');
+    const container = document.getElementById('container');
+    let currentMethod = 'iframe';
 
-    const mainDisplay = document.getElementById('mainTime');
-    const subDisplay = document.getElementById('subTime');
-    const timerBar = document.getElementById('timerBar');
+    function clearContainer() {
+        container.innerHTML = '';
+    }
 
-    function startPause() {
-        if (!isRunning) {
-            startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(updateTime, 10);
-            isRunning = true;
-        } else {
-            clearInterval(timerInterval);
-            elapsedTime = Date.now() - startTime;
-            isRunning = false;
+    function loadIframe(url) {
+        clearContainer();
+        const iframe = document.createElement('iframe');
+        iframe.id = 'targetFrame';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-downloads';
+        iframe.src = url;
+        container.appendChild(iframe);
+    }
+
+    function loadEmbed(url) {
+        clearContainer();
+        const embed = document.createElement('embed');
+        embed.src = url;
+        embed.style.width = '100%';
+        embed.style.height = '100%';
+        container.appendChild(embed);
+    }
+
+    function loadObject(url) {
+        clearContainer();
+        const obj = document.createElement('object');
+        obj.data = url;
+        obj.type = 'text/html';
+        obj.style.width = '100%';
+        obj.style.height = '100%';
+        container.appendChild(obj);
+    }
+
+    async function loadFetchInject(url) {
+        clearContainer();
+        const div = document.createElement('div');
+        div.style.width = '100%';
+        div.style.height = '100%';
+        div.style.overflow = 'auto';
+        div.style.backgroundColor = '#fff';
+        div.style.color = '#000';
+        div.innerHTML = '<div style="padding:20px; text-align:center; color:#0f0; background:#000;">Loading via fetch + inject...</div>';
+        container.appendChild(div);
+        try {
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            div.innerHTML = data.contents;
+            // rewrite relative links
+            const base = document.createElement('base');
+            base.href = url;
+            div.querySelectorAll('a, link, script').forEach(el => {
+                if (el.href && el.href.startsWith('/')) el.href = url + el.href;
+            });
+        } catch(e) {
+            div.innerHTML = `<div style="color:#f00; padding:20px;">Fetch failed: ${e.message}<br>Try "Object Tag" method instead.</div>`;
         }
     }
 
-    function reset() {
-        clearInterval(timerInterval);
-        startTime = 0;
-        elapsedTime = 0;
-        isRunning = false;
-        mainDisplay.textContent = '0';
-        subDisplay.textContent = '.00';
+    function loadUrl() {
+        let rawUrl = urlInput.value.trim();
+        if (!rawUrl) return;
+        if (!rawUrl.startsWith('http')) rawUrl = 'https://' + rawUrl;
+        
+        switch(currentMethod) {
+            case 'iframe':
+                loadIframe(rawUrl);
+                break;
+            case 'embed':
+                loadEmbed(rawUrl);
+                break;
+            case 'object':
+                loadObject(rawUrl);
+                break;
+            case 'fetch':
+                loadFetchInject(rawUrl);
+                break;
+        }
     }
 
-    function updateTime() {
-        elapsedTime = Date.now() - startTime;
-        let totalMs = elapsedTime;
-        let minutes = Math.floor(totalMs / 60000);
-        totalMs %= 60000;
-        let seconds = Math.floor(totalMs / 1000);
-        let milliseconds = Math.floor((totalMs % 1000) / 10);
-
-        if (minutes > 0) {
-            mainDisplay.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
-        } else {
-            mainDisplay.textContent = String(seconds);
-        }
-        subDisplay.textContent = `.${String(milliseconds).padStart(2, '0')}`;
+    function setMethod(method) {
+        currentMethod = method;
+        document.querySelectorAll('.method-btn').forEach(btn => {
+            if (btn.getAttribute('data-method') === method) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        loadUrl();
     }
 
-    // Global key listeners (T = start/pause, Y = reset)
-    window.addEventListener('keydown', (e) => {
-        const key = e.key.toLowerCase();
-        // Don't trigger if typing into an input
-        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-        if (key === 't') {
-            e.preventDefault();
-            startPause();
-        }
-        if (key === 'y') {
-            e.preventDefault();
-            reset();
-        }
-    }, true);
-
-    // Click on timer bar also toggles
-    timerBar.addEventListener('click', startPause);
-
-    // Optional: Ensure iframe doesn't steal focus from keybinds
-    const iframe = document.getElementById('gameFrame');
-    iframe.addEventListener('load', () => {
-        // keep focus on body to capture keys
-        document.body.focus();
+    goBtn.addEventListener('click', loadUrl);
+    urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') loadUrl();
     });
-    // click on wrapper focuses body
-    document.body.addEventListener('click', () => {
-        document.body.focus();
+
+    document.querySelectorAll('.method-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setMethod(btn.getAttribute('data-method'));
+        });
     });
+
+    // Default load with Object tag (bypasses many ISP filters)
+    setMethod('object');
 </script>
 </body>
 </html>
