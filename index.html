@@ -1,3 +1,6 @@
+<!-- Embed The Real Run from squareweb.app into GitHub Pages -->
+<!-- Save as index.html in your GitHub repo -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +35,6 @@
             height: 100%;
             border: none;
         }
-        /* Fallback message if iframe fails */
         .fallback {
             display: none;
             position: absolute;
@@ -54,7 +56,7 @@
 <body>
     <div class="iframe-container">
         <iframe 
-            src="https://therealrun.com" 
+            src="https://tavvkkj.squareweb.app/venice/original" 
             allow="autoplay; fullscreen; clipboard-write; encrypted-media; gamepad; accelerometer; gyroscope"
             allowfullscreen
             loading="eager"
@@ -63,12 +65,11 @@
         ></iframe>
         <div class="fallback">
             <p>Unable to load The Real Run.</p>
-            <p><a href="https://therealrun.com" target="_blank" style="color: #fff;">Click here to open directly</a></p>
+            <p><a href="https://tavvkkj.squareweb.app/venice/original" target="_blank" style="color: #fff;">Click here to open directly</a></p>
         </div>
     </div>
 
     <script>
-        // Detect iframe loading failure
         const iframe = document.querySelector('iframe');
         const fallback = document.querySelector('.fallback');
         
@@ -76,14 +77,12 @@
             fallback.style.display = 'block';
         };
         
-        // Timeout fallback after 15 seconds
         setTimeout(function() {
             try {
                 if (iframe.contentDocument && iframe.contentDocument.readyState !== 'complete') {
                     fallback.style.display = 'block';
                 }
             } catch(e) {
-                // Cross-origin error means iframe loaded but cannot access - that's fine
                 console.log('Iframe loaded (cross-origin)');
             }
         }, 15000);
