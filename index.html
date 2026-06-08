@@ -2,64 +2,531 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iframe Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Frame Bypass Toolkit | X-Frame & Restrictions Workbench</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        * {
+            box-sizing: border-box;
         }
+
+        body {
+            background: linear-gradient(145deg, #0a0f1e 0%, #0c1222 100%);
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', monospace;
+            margin: 0;
+            padding: 1.5rem;
+            min-height: 100vh;
+            color: #eef5ff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header section */
+        .tool-header {
+            background: rgba(18, 25, 45, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 1.2rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(72, 187, 255, 0.25);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin: 0 0 0.35rem 0;
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #C084FC, #60A5FA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-left: 3px solid #3b82f6;
+            padding-left: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .target-badge {
+            font-family: monospace;
+            background: #00000055;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 1rem;
+            margin-top: 0.8rem;
+            word-break: break-all;
+            border: 1px solid #2d3a5e;
+        }
+
+        /* button panel */
+        .methods-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .bypass-btn {
+            background: #111827;
+            border: none;
+            padding: 0.85rem 1.6rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #2d3a5e;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+        }
+
+        .bypass-btn i {
+            font-style: normal;
+            margin-right: 6px;
+        }
+
+        .bypass-btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.05);
+            border-bottom-color: #60a5fa;
+            background: #1e293b;
+        }
+
+        .btn-primary {
+            background: #1e2a47;
+            border-bottom-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #2c1f2e;
+            border-bottom-color: #f97316;
+        }
+
+        .btn-special {
+            background: #0f172f;
+            border-bottom-color: #a855f7;
+        }
+
+        /* iframe container + fallback */
+        .frame-stage {
+            background: #030617;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 20px 35px -12px black;
+            border: 1px solid #2d3748;
+            transition: all 0.2s;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            background: #000000aa;
+            border-radius: 1rem;
+            overflow: auto;
+            resize: vertical;
+            min-height: 480px;
+            height: 65vh;
+            border: 1px solid #334155;
+        }
+
         iframe {
             width: 100%;
-            height: 500px;
-            border: 2px solid #ccc;
-            margin-bottom: 15px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007BFF;
-            color: white;
+            height: 100%;
             border: none;
-            border-radius: 4px;
+            background: #fff;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .status-bar {
+            margin-top: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+            font-family: monospace;
+            background: #0f1422cc;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .status-msg {
+            color: #9ca3af;
+            background: #00000040;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        .method-badge {
+            background: #2563eb30;
+            padding: 0.2rem 0.7rem;
+            border-radius: 18px;
+            color: #b9d0ff;
+        }
+
+        .note {
+            background: #131c2c;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1.8rem;
+            font-size: 0.8rem;
+            border-left: 5px solid #f59e0b;
+            color: #cbd5e6;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .url-badge {
+            background: #00000066;
+            font-weight: 500;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .bypass-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.75rem;
+            }
+            .iframe-wrapper {
+                min-height: 380px;
+            }
         }
     </style>
 </head>
 <body>
+<div class="container">
+    <div class="tool-header">
+        <h1>🛸 FrameBreak · X-Frame Bypass Lab</h1>
+        <div class="sub">Multi‑method iframe injection · Anti‑XFO · sandbox evasion · CORS workarounds</div>
+        <div class="target-badge">
+            🎯 TARGET: <strong id="targetDomain">www.tavvkkj.xyz</strong>
+        </div>
+    </div>
 
-    <iframe id="target-iframe" src="https://www.tavvkkj.xyz/venice/original"></iframe>
+    <div class="methods-panel">
+        <button class="bypass-btn btn-primary" id="methodBasic" data-method="basic">📦 1. Standard iframe</button>
+        <button class="bypass-btn btn-primary" id="methodSandbox" data-method="sandbox">⚙️ 2. Sandbox + allow-same-origin</button>
+        <button class="bypass-btn btn-primary" id="methodXfoBypass" data-method="xfo">🔓 3. X-Frame-Options Bypass (CORS proxy)</button>
+        <button class="bypass-btn btn-warning" id="methodDataUri" data-method="datauri">🌀 4. Data URI + JS redirect</button>
+        <button class="bypass-btn btn-special" id="methodBlobIframe" data-method="blob">📄 5. Blob HTML wrapper</button>
+        <button class="bypass-btn btn-special" id="methodReloadProxy" data-method="reproxy">🌐 6. Public CORS proxy (cors-anywhere)</button>
+        <button class="bypass-btn" id="methodNaked" data-method="naked">🧪 7. Naked embed + referrerpolicy</button>
+    </div>
 
-    <br>
+    <div class="frame-stage">
+        <div class="iframe-wrapper" id="iframeContainer">
+            <iframe id="dynamicFrame" title="bypass-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation-by-user-activation"></iframe>
+        </div>
+        <div class="status-bar">
+            <div class="status-msg" id="liveStatus">⚡ idle — select a method</div>
+            <div class="method-badge" id="activeMethodTag">method: —</div>
+            <div class="method-badge" id="securityNote">⚠️ some methods require external proxy</div>
+        </div>
+    </div>
 
-    <button id="action-btn">A And D</button>
+    <div class="note">
+        💡 <strong>Techniques explained:</strong> <br>
+        • <strong>Standard & Sandbox:</strong> Basic embedding + relaxed sandbox flags (allow-same-origin, scripts).<br>
+        • <strong>XFO Bypass (cors proxy):</strong> Uses <code>https://corsproxy.io/</code> to fetch target and strip X-Frame headers dynamically.<br>
+        • <strong>Data URI redirector:</strong> Injects a meta-refresh/JS navigation to load the target inside a frame context, bypassing some restrictions.<br>
+        • <strong>Blob HTML wrapper:</strong> Creates a dynamic blob document with JavaScript that tries to load the target URL in a nested frame.<br>
+        • <strong>Public CORS proxy:</strong> Alternative proxy that returns content with relaxed headers.<br>
+        ⚠️ <em>Note: if target uses CSP <code>frame-ancestors 'none'</code> or XFO: DENY, only a properly configured backend proxy can bypass it. Proxy methods may fail if origin blocks proxy IP.</em>
+    </div>
+</div>
 
-    <script>
-        document.getElementById('action-btn').addEventListener('click', () => {
-            const iframe = document.getElementById('target-iframe');
-            
+<script>
+    (function() {
+        // ----- CONFIGURATION -----
+        const TARGET_URL = "https://www.tavvkkj.xyz";
+        // proxy endpoints (public, free, but best effort)
+        const CORS_PROXY = "https://corsproxy.io/?" + encodeURIComponent(TARGET_URL);
+        const CORS_ANYWHERE_PROXY = "https://cors-anywhere.herokuapp.com/" + TARGET_URL;
+        // fallback alternative (another public CORS proxy)
+        const ALT_PROXY = "https://api.allorigins.win/raw?url=" + encodeURIComponent(TARGET_URL);
+        
+        // DOM elements
+        const iframe = document.getElementById('dynamicFrame');
+        const statusSpan = document.getElementById('liveStatus');
+        const activeMethodSpan = document.getElementById('activeMethodTag');
+        
+        // helper functions
+        function setStatus(message, isError = false) {
+            statusSpan.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
+            statusSpan.style.color = isError ? '#fca5a5' : '#bbf0d0';
+            setTimeout(() => {
+                if(statusSpan.innerHTML.includes(message)) {
+                    // reset color after 3 sec but keep message
+                    statusSpan.style.color = '#9ca3af';
+                }
+            }, 2800);
+        }
+        
+        function updateMethodLabel(methodName) {
+            activeMethodSpan.innerHTML = `🧩 method: ${methodName}`;
+        }
+        
+        function resetIframeSrc() {
+            // clear previous content - but we keep sandbox property as default; can be changed per method
+            iframe.srcdoc = "";
+            iframe.src = "about:blank";
+        }
+        
+        // ------------------------------------------------------------------
+        // METHOD 1: Standard iframe direct load (most likely blocked by XFO)
+        function standardIframe() {
+            resetIframeSrc();
+            // reset sandbox to defaults (allow-same-origin + allow-scripts to atleast try js)
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals');
+            iframe.src = TARGET_URL;
+            updateMethodLabel("Standard iframe (direct)");
+            setStatus("Direct iframe load — expecting XFO/CSP block, but attempt made.");
+            // error event doesn't fire on x-frame, but we can show timeout notice
+            setTimeout(() => {
+                try {
+                    if (iframe.contentWindow && iframe.contentDocument && iframe.contentDocument.title === "") {
+                        // maybe not loaded
+                    }
+                } catch(e) {
+                    setStatus("X-Frame-Options likely blocked this. Try proxy methods.", true);
+                }
+            }, 1200);
+        }
+        
+        // METHOD 2: Sandbox relaxed + allow-same-origin
+        function sandboxMethod() {
+            resetIframeSrc();
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation allow-modals');
+            iframe.src = TARGET_URL;
+            updateMethodLabel("Sandbox bypass attempt");
+            setStatus("Sandbox: allow-same-origin + scripts — may defeat some restrictions.");
+        }
+        
+        // METHOD 3: X-Frame-Options Bypass using CORS proxy (corsproxy.io)
+        function xfoBypassProxy() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals');
+            // Using corsproxy.io which often removes X-Frame-Options
+            iframe.src = CORS_PROXY;
+            updateMethodLabel("XFO Bypass: corsproxy.io");
+            setStatus("Using corsproxy.io — strips X-Frame headers + CORS relaxed.");
+        }
+        
+        // METHOD 4: Data URI redirector technique
+        // creates a data:text/html page that attempts to load target in iframe or via JS redirection
+        function dataUriRedirect() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-modals allow-forms');
+            const dataHtml = `<!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"><title>Frame Bridge</title>
+            <style>body { margin:0; background:#111; display:flex; height:100vh; } iframe { width:100%; height:100%; border:none; }</style>
+            </head>
+            <body>
+            <iframe id="innerFrame" src="${TARGET_URL}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals" style="width:100%; height:100%; border:0;"></iframe>
+            <script>
+                // Also attempt to force reload via window.location if inner frame blocked? but primary iframe nested
+                let frame = document.getElementById('innerFrame');
+                frame.onload = () => { console.log('frame loaded datauri method'); };
+                frame.onerror = (e) => { console.warn(e); };
+                // second attempt: after 1 sec, try to reload src using js & alternative attribute
+                setTimeout(() => {
+                    try {
+                        if(frame.contentWindow.location.href === 'about:blank') {
+                            frame.src = '${TARGET_URL}';
+                        }
+                    } catch(e) { /* cross origin but not critical */ }
+                }, 500);
+            <\/script>
+            </body>
+            </html>`;
+            iframe.srcdoc = dataHtml;
+            updateMethodLabel("Data URI redirect wrapper");
+            setStatus("Embedding target inside nested iframe via srcdoc — may bypass simple XFO.");
+        }
+        
+        // METHOD 5: Blob HTML wrapper with dynamic script injection
+        function blobIframeMethod() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-modals allow-forms allow-top-navigation');
+            const blobContent = `<!DOCTYPE html>
+            <html>
+            <head><title>Blob Frame Gateway</title>
+            <style> * { margin:0; padding:0; } body { background:#0b1120; } iframe { width:100%; height:100vh; border:0; } </style>
+            </head>
+            <body>
+            <iframe id="proxyFrame" src="${TARGET_URL}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+            <script>
+                const frm = document.getElementById('proxyFrame');
+                // attempt reload to defeat frame options caching
+                function retryFrame() {
+                    try {
+                        frm.src = frm.src;
+                    } catch(e) { console.log(e); }
+                }
+                setTimeout(retryFrame, 300);
+                // try to create a dynamic iframe with different attribute
+                const altFrame = document.createElement('iframe');
+                altFrame.style.display = 'none';
+                altFrame.src = '${TARGET_URL}';
+                document.body.appendChild(altFrame);
+                setTimeout(() => altFrame.remove(), 600);
+            <\/script>
+            </body>
+            </html>`;
+            const blob = new Blob([blobContent], { type: 'text/html' });
+            const blobUrl = URL.createObjectURL(blob);
+            iframe.src = blobUrl;
+            updateMethodLabel("Blob HTML wrapper + nested iframe");
+            setStatus("Blob: dynamic document with nested iframe and reload triggers.");
+            // revoke blob after load to avoid memory leak
+            iframe.onload = () => { URL.revokeObjectURL(blobUrl); iframe.onload = null; };
+        }
+        
+        // METHOD 6: Public CORS proxy (cors-anywhere / herokuapp)
+        function reproxyMethod() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-modals');
+            iframe.src = CORS_ANYWHERE_PROXY;
+            updateMethodLabel("CORS-Anywhere Proxy");
+            setStatus("Using cors-anywhere.herokuapp.com — CORS proxy may remove XFO.");
+            setTimeout(() => {
+                try {
+                    if (iframe.contentDocument && iframe.contentDocument.title === undefined) {}
+                } catch(e) {
+                    setStatus("Proxy may be rate-limited, try XFO bypass or alternative proxy method", true);
+                }
+            }, 2000);
+        }
+        
+        // METHOD 7: Naked embed + referrerpolicy + remove sandbox
+        function nakedEmbed() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('referrerpolicy', 'no-referrer');
+            iframe.setAttribute('allow', 'fullscreen; autoplay;');
+            iframe.src = TARGET_URL;
+            updateMethodLabel("Naked embed | referrerpolicy + allow");
+            setStatus("Direct naked iframe (no sandbox override) — most restrictive, may fail.");
+        }
+        
+        // Extra: fallback alternative using allorigins proxy (additional)
+        function altProxyMethod() {
+            resetIframeSrc();
+            iframe.removeAttribute('sandbox');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups');
+            iframe.src = ALT_PROXY;
+            updateMethodLabel("AllOrigins Proxy (raw)");
+            setStatus("Alternative allorigins.win proxy — fetches raw HTML with CORS.");
+        }
+        
+        // combine advanced: add extra hidden option (double iframe trick)
+        // But we have 7 buttons, but to enrich we can also add dynamic listener to a secret double method?
+        // however we implement double nesting via some methods already (dataUri and blob)
+        
+        // ----- Helper to reset error timers and set default sandbox style -----
+        function setDefaultSandboxForIframe() {
+            // default for later methods that expect sandbox
+            if(!iframe.hasAttribute('sandbox')) {
+                iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+            }
+        }
+        
+        // add additional auxiliary function that loads proxy if method fails? but not needed
+        // make UI reactive
+        const methodMap = new Map([
+            ['basic', standardIframe],
+            ['sandbox', sandboxMethod],
+            ['xfo', xfoBypassProxy],
+            ['datauri', dataUriRedirect],
+            ['blob', blobIframeMethod],
+            ['reproxy', reproxyMethod],
+            ['naked', nakedEmbed]
+        ]);
+        
+        // Register all button events
+        document.getElementById('methodBasic').addEventListener('click', () => methodMap.get('basic')());
+        document.getElementById('methodSandbox').addEventListener('click', () => methodMap.get('sandbox')());
+        document.getElementById('methodXfoBypass').addEventListener('click', () => methodMap.get('xfo')());
+        document.getElementById('methodDataUri').addEventListener('click', () => methodMap.get('datauri')());
+        document.getElementById('methodBlobIframe').addEventListener('click', () => methodMap.get('blob')());
+        document.getElementById('methodReloadProxy').addEventListener('click', () => methodMap.get('reproxy')());
+        document.getElementById('methodNaked').addEventListener('click', () => methodMap.get('naked')());
+        
+        // Append an extra hidden but accessible method with right-click? not needed; but show advanced tip
+        // extra alternative method that uses altProxy if someone wants.
+        const altButton = document.createElement('button');
+        altButton.innerText = '🔄 8. AllOrigins (alt proxy)';
+        altButton.className = 'bypass-btn';
+        altButton.style.background = '#2a2542';
+        altButton.addEventListener('click', altProxyMethod);
+        document.querySelector('.methods-panel').appendChild(altButton);
+        
+        // initial default state: load sandbox? let's display basic info & not load anything heavy
+        resetIframeSrc();
+        iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
+        updateMethodLabel("standby");
+        setStatus("Ready — choose a bypass method. (Target: www.tavvkkj.xyz)");
+        
+        // Note: Additional injection technique: The iframe might fail due to 'X-Frame-Options: SAMEORIGIN' or DENY
+        // We have 3 proxy based solutions plus data/blob wrappers that might succeed.
+        // Provide dynamic info about proxy reliability
+        const proxyNote = document.createElement('span');
+        proxyNote.className = 'method-badge';
+        proxyNote.style.background = '#b4530955';
+        proxyNote.innerText = '⚡ proxy methods recommended for strict XFO';
+        document.querySelector('.status-bar').appendChild(proxyNote);
+        
+        // handling iframe load errors detection (some silent)
+        iframe.addEventListener('load', () => {
+            // try to detect blocked content due to XFO: reading contentWindow throws sometimes
             try {
-                // Target the window inside the iframe
-                const iframeWindow = iframe.contentWindow;
-
-                // Create and dispatch the 'A' keydown event
-                const eventA = new KeyboardEvent('keydown', { key: 'a', code: 'KeyA', bubbles: true });
-                iframeWindow.dispatchEvent(eventA);
-
-                // Create and dispatch the 'D' keydown event
-                const eventD = new KeyboardEvent('keydown', { key: 'd', code: 'KeyD', bubbles: true });
-                iframeWindow.dispatchEvent(eventD);
-                
-                console.log("Keys 'A' and 'D' dispatched.");
-            } catch (error) {
-                console.error("Security Blocked: Cannot access cross-origin iframe.", error);
-                alert("Cross-Origin Security Restriction: Browsers do not allow sending keystrokes to an external website iframe.");
+                const doc = iframe.contentDocument;
+                if (doc && doc.location.href === 'about:blank' && iframe.src !== 'about:blank') {
+                    setStatus("Frame loaded but X-Frame blocked (blank content). Try proxy or blob method.", true);
+                } else if (doc && doc.title && doc.title.includes("403") || (doc && doc.body && doc.body.innerText.includes("blocked"))) {
+                    setStatus("Site sent frame blocking headers. Use XFO proxy method #3 or #6", true);
+                } else {
+                    if(iframe.src !== 'about:blank' && iframe.src !== '') {
+                        setStatus("Frame loaded — method might have bypassed restrictions!");
+                    }
+                }
+            } catch (crossErr) {
+                // cross-origin but that still could mean frame successfully loaded but due to same-origin policy we cannot inspect
+                // However, if cross-origin error appears and iframe not blank, typically it means content loaded but script access denied
+                if(iframe.src && iframe.src !== 'about:blank') {
+                    setStatus("Frame content loaded (cross-origin restrictions active, but visually working)");
+                } else {
+                    setStatus("X-Frame / CSP blocked content entirely.", true);
+                }
             }
         });
-    </script>
-
+        
+        // force small reset for any odd sandbox conflicts
+        window.addEventListener('load', () => {
+            // warmup: set target domain span text
+            document.getElementById('targetDomain').innerText = TARGET_URL;
+        });
+    })();
+</script>
 </body>
 </html>
