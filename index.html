@@ -1,1 +1,48 @@
-<iframe src="https://ss.tavvkkj.xyz" width="100%" height="500px" frameborder="0"></iframe>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Subway Surfers</title>
+    <style>
+        /* Reset and remove scrollbars */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000; /* Black background to avoid white flashes */
+        }
+
+        /* Container to force strict full-screen bounding */
+        .game-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The actual game iframe */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <iframe 
+            src="https://ss.tavvkkj.xyz" 
+            title="Subway Surfers"
+            allow="autoplay; gamepad; fullscreen; keyboard"
+            scrolling="no">
+        </iframe>
+    </div>
+
+</body>
+</html>
