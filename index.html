@@ -20,7 +20,6 @@
             overflow: hidden;
         }
 
-        /* TOP BAR */
         .topbar {
             background: #14141f;
             padding: 10px 20px;
@@ -30,6 +29,8 @@
             border-bottom: 2px solid #2fa548;
             flex-shrink: 0;
             z-index: 10;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .topbar h1 {
             font-size: 18px;
@@ -69,96 +70,102 @@
             border: 1px solid #2d3748;
         }
 
-        /* IFRAME WRAPPER */
-        .iframe-wrap {
+        .main-wrap {
             flex: 1;
+            display: flex;
             position: relative;
-            background: #000;
-        }
-        .iframe-wrap iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #fff;
+            background: #0a0a12;
         }
 
-        /* OVERLAY CONTROLS */
-        .controls {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #14141fe0;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid #2fa548;
-            border-radius: 16px;
-            padding: 18px 28px;
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 240px;
+            background: #11111e;
+            border-right: 1px solid #1a1a2e;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            min-width: 280px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.9);
-            z-index: 20;
-            pointer-events: auto;
-            transition: opacity 0.3s, transform 0.3s;
+            gap: 12px;
+            flex-shrink: 0;
+            overflow-y: auto;
         }
-        .controls .label {
-            font-size: 13px;
+        .sidebar .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #4a5568;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .sidebar .info-box {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
             color: #a0aec0;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            line-height: 1.6;
         }
-        .controls .speed-display {
-            font-size: 28px;
+        .sidebar .info-box strong {
+            color: #f6e05e;
+        }
+        .sidebar .info-box .err {
+            color: #fc8181;
+        }
+        .sidebar .info-box .ok {
+            color: #3fd05a;
+        }
+
+        .sidebar .speed-control {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .sidebar .speed-control .label {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-bottom: 4px;
+        }
+        .sidebar .speed-control .speed-display {
+            font-size: 26px;
             font-weight: 900;
             color: #f6e05e;
-            font-variant-numeric: tabular-nums;
+            text-align: center;
         }
-        .controls .speed-display .x {
-            font-size: 16px;
+        .sidebar .speed-control .speed-display .x {
+            font-size: 14px;
             color: #718096;
-            font-weight: 400;
         }
-        .controls input[type="range"] {
+        .sidebar .speed-control input[type="range"] {
             width: 100%;
-            height: 6px;
+            height: 4px;
             -webkit-appearance: none;
             appearance: none;
             background: #2d3748;
             border-radius: 4px;
             outline: none;
             cursor: pointer;
+            margin: 8px 0;
         }
-        .controls input[type="range"]::-webkit-slider-thumb {
+        .sidebar .speed-control input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3fd05a, #2fa548);
-            cursor: pointer;
-            box-shadow: 0 0 16px rgba(63, 208, 90, 0.4);
-            border: 2px solid #0a0a12;
-        }
-        .controls input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: linear-gradient(135deg, #3fd05a, #2fa548);
             cursor: pointer;
             border: 2px solid #0a0a12;
         }
-        .controls .btn-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 4px;
-            width: 100%;
+        .sidebar .speed-control input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3fd05a, #2fa548);
+            cursor: pointer;
+            border: 2px solid #0a0a12;
         }
-        .controls .btn-row button {
-            flex: 1;
-            padding: 8px 0;
+
+        .sidebar .btn {
+            padding: 10px 0;
             border: none;
             border-radius: 8px;
             font-weight: 800;
@@ -166,47 +173,53 @@
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
+            width: 100%;
         }
-        .controls .btn-row .btn-inject {
+        .sidebar .btn-inject {
             background: #3fd05a;
             color: #0a0a12;
         }
-        .controls .btn-row .btn-inject:hover {
+        .sidebar .btn-inject:hover {
             background: #4ee06a;
             transform: scale(1.02);
         }
-        .controls .btn-row .btn-inject.active {
+        .sidebar .btn-inject.active {
             background: #fc8181;
             color: #fff;
         }
-        .controls .btn-row .btn-inject.active:hover {
+        .sidebar .btn-inject.active:hover {
             background: #ff6b6b;
         }
-        .controls .btn-row .btn-stop {
+        .sidebar .btn-stop {
             background: #2d3748;
             color: #a0aec0;
         }
-        .controls .btn-row .btn-stop:hover {
+        .sidebar .btn-stop:hover {
             background: #3d4a5a;
         }
-        .controls .btn-row .btn-stop.active {
-            background: #fc8181;
-            color: #fff;
-        }
-        .controls .btn-row .btn-reset {
+        .sidebar .btn-reset {
             background: #1a1a2e;
             color: #718096;
             border: 1px solid #2d3748;
         }
-        .controls .btn-row .btn-reset:hover {
+        .sidebar .btn-reset:hover {
             background: #2d3748;
         }
-        .controls .hotkey-hint {
+        .sidebar .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+        .sidebar .btn-row .btn {
+            flex: 1;
+        }
+
+        .sidebar .hotkey-hint {
             font-size: 11px;
             color: #4a5568;
-            margin-top: 2px;
+            text-align: center;
+            padding: 4px 0;
         }
-        .controls .hotkey-hint kbd {
+        .sidebar .hotkey-hint kbd {
             color: #a0aec0;
             background: #1a1a2e;
             padding: 1px 8px;
@@ -215,20 +228,60 @@
             font-size: 11px;
         }
 
-        /* INJECTION LOG */
+        /* ===== IFRAME AREA ===== */
+        .iframe-area {
+            flex: 1;
+            position: relative;
+            background: #0a0a12;
+        }
+        .iframe-area .placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #4a5568;
+            pointer-events: none;
+        }
+        .iframe-area .placeholder .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .iframe-area .placeholder h2 {
+            font-size: 20px;
+            color: #718096;
+        }
+        .iframe-area .placeholder p {
+            font-size: 14px;
+            color: #4a5568;
+            margin-top: 4px;
+        }
+
+        .iframe-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+            display: none;
+        }
+        .iframe-area iframe.show {
+            display: block;
+        }
+
+        /* ===== LOG ===== */
         .log {
             position: absolute;
-            top: 10px;
+            bottom: 10px;
+            left: 10px;
             right: 10px;
-            z-index: 15;
+            z-index: 20;
             background: #0a0a12e0;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid #2d3748;
             border-radius: 8px;
-            padding: 10px 14px;
-            max-width: 300px;
-            max-height: 200px;
+            padding: 8px 12px;
+            max-height: 120px;
             overflow-y: auto;
             font-size: 11px;
             color: #a0aec0;
@@ -249,21 +302,24 @@
         .log .entry .err {
             color: #fc8181;
         }
-
+        .log .entry .info {
+            color: #63b3ed;
+        }
         .log.show {
             display: block;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 600px) {
-            .controls {
-                min-width: unset;
-                width: calc(100% - 20px);
-                bottom: 10px;
-                padding: 14px 18px;
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 100%;
+                max-height: 220px;
+                border-right: none;
+                border-bottom: 1px solid #1a1a2e;
+                flex-shrink: 0;
             }
-            .controls .speed-display {
-                font-size: 22px;
+            .main-wrap {
+                flex-direction: column;
             }
             .topbar h1 {
                 font-size: 14px;
@@ -271,9 +327,19 @@
             .topbar .status {
                 font-size: 11px;
             }
-            .controls .btn-row button {
-                font-size: 12px;
-                padding: 6px 0;
+            .topbar .key-hint {
+                font-size: 10px;
+                padding: 2px 10px;
+            }
+            .sidebar .speed-control .speed-display {
+                font-size: 20px;
+            }
+            .log {
+                max-height: 80px;
+                font-size: 10px;
+                bottom: 5px;
+                left: 5px;
+                right: 5px;
             }
         }
     </style>
@@ -291,28 +357,52 @@
         </div>
     </div>
 
-    <!-- IFRAME -->
-    <div class="iframe-wrap" id="iframeWrap">
-        <iframe id="targetFrame" src="https://ss.randomkzn.com/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    <!-- MAIN -->
+    <div class="main-wrap">
 
-        <!-- LOG -->
-        <div class="log" id="logPanel"></div>
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="section-title">Control Panel</div>
 
-        <!-- CONTROLS -->
-        <div class="controls" id="controls">
-            <div class="label">SPEED MULTIPLIER</div>
-            <div class="speed-display" id="speedDisplay">1.00<span class="x">x</span></div>
-            <input type="range" id="speedSlider" min="0.5" max="50" step="0.1" value="1.0">
+            <div class="info-box" id="infoBox">
+                <div id="connectionStatus">🔴 <span class="err">Not connected</span></div>
+                <div style="margin-top:4px;font-size:11px;" id="connectionDetail">The site refused to connect.<br>Click <strong>OPEN IN NEW TAB</strong> below.</div>
+            </div>
+
+            <div class="speed-control">
+                <div class="label">SPEED MULTIPLIER</div>
+                <div class="speed-display" id="speedDisplay">1.00<span class="x">x</span></div>
+                <input type="range" id="speedSlider" min="0.5" max="50" step="0.1" value="1.0">
+            </div>
+
+            <button class="btn btn-inject" id="injectBtn">⚡ INJECT</button>
 
             <div class="btn-row">
-                <button class="btn-inject" id="injectBtn">⚡ INJECT</button>
-                <button class="btn-stop" id="stopBtn">⏹ STOP</button>
-                <button class="btn-reset" id="resetBtn">↺ 1x</button>
+                <button class="btn btn-stop" id="stopBtn">⏹ STOP</button>
+                <button class="btn btn-reset" id="resetBtn">↺ 1x</button>
             </div>
 
+            <button class="btn" id="openTabBtn" style="background:#2b6cb0;color:#fff;border:none;">🔗 OPEN IN NEW TAB</button>
+
             <div class="hotkey-hint">
-                Press <kbd>Q</kbd> to toggle injection · Press <kbd>Q</kbd> again to stop
+                Press <kbd>Q</kbd> to toggle injection · <kbd>Q</kbd> to stop
             </div>
+        </div>
+
+        <!-- IFRAME AREA -->
+        <div class="iframe-area" id="iframeArea">
+            <div class="placeholder" id="placeholder">
+                <div class="icon">🚫</div>
+                <h2>ss.randomkzn.com refused to connect</h2>
+                <p>The site does not allow embedding in iframes.</p>
+                <p style="margin-top:8px;font-size:13px;color:#4a5568;">
+                    Use the <strong style="color:#3fd05a;">"OPEN IN NEW TAB"</strong> button below.
+                </p>
+            </div>
+            <iframe id="targetFrame" src="about:blank"></iframe>
+
+            <!-- LOG -->
+            <div class="log" id="logPanel"></div>
         </div>
     </div>
 
@@ -322,19 +412,27 @@
 
             // ===== DOM REFS =====
             const iframe = document.getElementById('targetFrame');
+            const iframeArea = document.getElementById('iframeArea');
+            const placeholder = document.getElementById('placeholder');
             const slider = document.getElementById('speedSlider');
             const speedDisplay = document.getElementById('speedDisplay');
             const injectBtn = document.getElementById('injectBtn');
             const stopBtn = document.getElementById('stopBtn');
             const resetBtn = document.getElementById('resetBtn');
+            const openTabBtn = document.getElementById('openTabBtn');
             const statusText = document.getElementById('statusText');
             const logPanel = document.getElementById('logPanel');
+            const infoBox = document.getElementById('infoBox');
+            const connectionStatus = document.getElementById('connectionStatus');
+            const connectionDetail = document.getElementById('connectionDetail');
 
             // ===== STATE =====
             let isInjected = false;
             let currentSpeed = 1.0;
             let injectionInterval = null;
             let logEntries = [];
+            let targetWindow = null;
+            let isConnected = false;
 
             // ===== LOG =====
             function addLog(msg, type = 'info') {
@@ -347,11 +445,66 @@
             function renderLog() {
                 let html = '';
                 logEntries.forEach(e => {
-                    const cls = e.type === 'ok' ? 'ok' : (e.type === 'err' ? 'err' : '');
+                    const cls = e.type === 'ok' ? 'ok' : (e.type === 'err' ? 'err' : (e.type === 'info' ? 'info' :
+                    ''));
                     html += `<div class="entry"><span class="time">[${e.time}]</span> <span class="${cls}">${e.msg}</span></div>`;
                 });
                 logPanel.innerHTML = html;
                 logPanel.classList.add('show');
+            }
+
+            // ===== CONNECTION STATUS =====
+            function setConnected(status) {
+                isConnected = status;
+                if (status) {
+                    connectionStatus.innerHTML = '🟢 <span class="ok">Connected</span>';
+                    connectionDetail.textContent = 'Tab is open and ready for injection.';
+                    placeholder.style.display = 'none';
+                    iframe.classList.add('show');
+                    addLog('✅ Connected to ss.randomkzn.com', 'ok');
+                } else {
+                    connectionStatus.innerHTML = '🔴 <span class="err">Not connected</span>';
+                    connectionDetail.innerHTML = 'The site refused to connect.<br>Click <strong>OPEN IN NEW TAB</strong> below.';
+                    placeholder.style.display = 'block';
+                    iframe.classList.remove('show');
+                    addLog('❌ Not connected - use "Open in New Tab"', 'err');
+                }
+            }
+
+            // ===== TRY TO CONNECT =====
+            function tryConnect() {
+                try {
+                    // Try to access the iframe
+                    const win = iframe.contentWindow;
+                    if (win && win.location && win.location.href !== 'about:blank') {
+                        setConnected(true);
+                        targetWindow = win;
+                        return true;
+                    }
+                } catch (e) {
+                    // Cross-origin or not loaded
+                }
+                setConnected(false);
+                return false;
+            }
+
+            // ===== OPEN IN NEW TAB =====
+            function openNewTab() {
+                const url = 'https://ss.randomkzn.com/';
+                const newTab = window.open(url, '_blank');
+                if (newTab) {
+                    addLog('🔗 Opened ss.randomkzn.com in new tab', 'info');
+                    targetWindow = newTab;
+                    setConnected(true);
+                    // Try to inject after a delay
+                    setTimeout(() => {
+                        if (isInjected) {
+                            injectSpeed(currentSpeed, newTab);
+                        }
+                    }, 3000);
+                } else {
+                    addLog('❌ Popup blocked. Allow popups for this site.', 'err');
+                }
             }
 
             // ===== INJECT SPEED HACK =====
@@ -361,49 +514,39 @@
                     (function() {
                         'use strict';
 
-                        // === CORE SPEED HACK ===
                         const SPEED = ${speed};
+                        let _speedActive = true;
 
-                        // Store original functions
                         const _origSetTimeout = window.setTimeout;
                         const _origSetInterval = window.setInterval;
                         const _origRAF = window.requestAnimationFrame;
                         const _origDateNow = Date.now;
                         const _origPerfNow = performance.now.bind(performance);
-                        const _origFetch = window.fetch;
-                        const _origXHR = window.XMLHttpRequest;
+                        const _origQueueMicrotask = window.queueMicrotask;
+                        const _origThen = Promise.prototype.then;
 
-                        // Flag to stop
-                        let _speedActive = true;
-
-                        // === OVERRIDE TIMERS ===
                         window.setTimeout = function(fn, delay, ...args) {
                             if (!_speedActive || typeof fn !== 'function' || delay < 0) {
                                 return _origSetTimeout.call(this, fn, delay, ...args);
                             }
-                            const newDelay = Math.max(0, Math.floor(delay / SPEED));
-                            return _origSetTimeout.call(this, fn, newDelay, ...args);
+                            return _origSetTimeout.call(this, fn, Math.max(0, Math.floor(delay / SPEED)), ...args);
                         };
 
                         window.setInterval = function(fn, delay, ...args) {
                             if (!_speedActive || typeof fn !== 'function' || delay < 0) {
                                 return _origSetInterval.call(this, fn, delay, ...args);
                             }
-                            const newDelay = Math.max(1, Math.floor(delay / SPEED));
-                            return _origSetInterval.call(this, fn, newDelay, ...args);
+                            return _origSetInterval.call(this, fn, Math.max(1, Math.floor(delay / SPEED)), ...args);
                         };
 
-                        // === RAF ===
                         window.requestAnimationFrame = function(callback) {
                             if (!_speedActive || typeof callback !== 'function') {
                                 return _origRAF.call(this, callback);
                             }
-                            // Execute immediately for max speed
                             try { callback(0); } catch(e) {}
                             return 0;
                         };
 
-                        // === TIME FAST-FORWARD ===
                         let _dateOffset = 0;
                         Date.now = function() {
                             if (!_speedActive) return _origDateNow();
@@ -418,8 +561,6 @@
                             return _origPerfNow() + _perfOffset;
                         };
 
-                        // === MICROTASKS ===
-                        const _origQueueMicrotask = window.queueMicrotask;
                         window.queueMicrotask = function(callback) {
                             if (!_speedActive || typeof callback !== 'function') {
                                 return _origQueueMicrotask.call(this, callback);
@@ -427,8 +568,6 @@
                             try { callback(); } catch(e) {}
                         };
 
-                        // === PROMISES ===
-                        const _origThen = Promise.prototype.then;
                         Promise.prototype.then = function(onFulfilled, onRejected) {
                             if (!_speedActive) {
                                 return _origThen.call(this, onFulfilled, onRejected);
@@ -441,7 +580,6 @@
                             );
                         };
 
-                        // === ANIMATIONS ===
                         const style = document.createElement('style');
                         style.textContent = \`
                             * {
@@ -453,24 +591,6 @@
                         \`;
                         document.documentElement.appendChild(style);
 
-                        // === FETCH ===
-                        window.fetch = function(input, init) {
-                            if (!_speedActive) return _origFetch.call(this, input, init);
-                            // Just pass through but with speed flag
-                            return _origFetch.call(this, input, init);
-                        };
-
-                        // === XHR ===
-                        window.XMLHttpRequest = function() {
-                            const xhr = new _origXHR();
-                            const origOpen = xhr.open;
-                            xhr.open = function(method, url, async, user, password) {
-                                return origOpen.call(this, method, url, async !== false, user, password);
-                            };
-                            return xhr;
-                        };
-
-                        // === MUTATION OBSERVER ===
                         const _origMO = window.MutationObserver;
                         window.MutationObserver = function(callback) {
                             return new _origMO(function(records) {
@@ -478,15 +598,10 @@
                             });
                         };
 
-                        // === EXPOSE CONTROL ===
                         window.__speedHack = {
-                            setSpeed: function(s) {
-                                // Re-inject with new speed
-                                window.location.reload();
-                            },
+                            setSpeed: function(s) { window.location.reload(); },
                             stop: function() {
                                 _speedActive = false;
-                                // Restore time functions
                                 Date.now = _origDateNow;
                                 performance.now = _origPerfNow;
                                 window.setTimeout = _origSetTimeout;
@@ -496,9 +611,7 @@
                                 Promise.prototype.then = _origThen;
                                 console.log('[SpeedHack] Stopped');
                             },
-                            isActive: function() {
-                                return _speedActive;
-                            }
+                            isActive: function() { return _speedActive; }
                         };
 
                         console.log('[SpeedHack] Injected with speed:', SPEED + 'x');
@@ -509,21 +622,19 @@
 
             // ===== INJECT =====
 
-            function injectSpeed(speed) {
+            function injectSpeed(speed, win) {
+                const target = win || targetWindow || iframe.contentWindow;
+                if (!target) {
+                    addLog('❌ No target window to inject into', 'err');
+                    return false;
+                }
+
                 try {
                     const code = getSpeedCode(speed);
-                    const win = iframe.contentWindow;
-                    if (!win) {
-                        addLog('❌ Cannot access iframe window', 'err');
-                        return false;
-                    }
-
-                    // Execute the code in the iframe
-                    const script = win.document.createElement('script');
+                    const script = target.document.createElement('script');
                     script.textContent = code;
-                    win.document.documentElement.appendChild(script);
+                    target.document.documentElement.appendChild(script);
                     script.remove();
-
                     addLog(`✅ Injected ${speed}x speed hack`, 'ok');
                     return true;
                 } catch (e) {
@@ -543,13 +654,19 @@
             }
 
             function startInjection() {
+                if (!isConnected && !targetWindow) {
+                    addLog('❌ Not connected. Open the site in a new tab first.', 'err');
+                    return;
+                }
+
                 const speed = parseFloat(slider.value);
                 if (speed < 0.1) {
                     addLog('❌ Speed too low', 'err');
                     return;
                 }
 
-                const success = injectSpeed(speed);
+                const win = targetWindow || iframe.contentWindow;
+                const success = injectSpeed(speed, win);
                 if (success) {
                     isInjected = true;
                     currentSpeed = speed;
@@ -559,22 +676,22 @@
                     injectBtn.classList.add('active');
                     addLog(`⚡ Speed hack active: ${speed}x`, 'ok');
 
-                    // Keep it alive
                     if (injectionInterval) clearInterval(injectionInterval);
                     injectionInterval = setInterval(() => {
-                        // Re-inject if lost
                         if (isInjected) {
                             try {
-                                const win = iframe.contentWindow;
-                                if (win && win.__speedHack && !win.__speedHack.isActive()) {
+                                const w = targetWindow || iframe.contentWindow;
+                                if (w && w.__speedHack && !w.__speedHack.isActive()) {
                                     addLog('🔄 Re-injecting...', 'info');
-                                    injectSpeed(currentSpeed);
+                                    injectSpeed(currentSpeed, w);
                                 }
                             } catch (e) {
-                                // Iframe changed, re-inject
                                 addLog('🔄 Re-injecting after reload...', 'info');
                                 setTimeout(() => {
-                                    if (isInjected) injectSpeed(currentSpeed);
+                                    if (isInjected) {
+                                        const w2 = targetWindow || iframe.contentWindow;
+                                        injectSpeed(currentSpeed, w2);
+                                    }
                                 }, 500);
                             }
                         }
@@ -589,21 +706,14 @@
                     injectionInterval = null;
                 }
 
-                // Try to stop the hack inside iframe
+                const win = targetWindow || iframe.contentWindow;
                 try {
-                    const win = iframe.contentWindow;
                     if (win && win.__speedHack) {
                         win.__speedHack.stop();
                         addLog('⏹ Speed hack stopped via API', 'ok');
                     }
                 } catch (e) {
-                    // Iframe not accessible, just reload
-                    try {
-                        iframe.src = iframe.src;
-                        addLog('🔄 Iframe reloaded to stop hack', 'info');
-                    } catch (e2) {
-                        addLog('❌ Could not stop hack', 'err');
-                    }
+                    addLog('⏹ Speed hack stopped (reload may be needed)', 'info');
                 }
 
                 statusText.textContent = 'INACTIVE';
@@ -617,8 +727,8 @@
                 slider.value = '1.0';
                 updateSpeedDisplay();
                 if (isInjected) {
-                    // Re-inject with speed 1.0
-                    const success = injectSpeed(1.0);
+                    const win = targetWindow || iframe.contentWindow;
+                    const success = injectSpeed(1.0, win);
                     if (success) {
                         currentSpeed = 1.0;
                         addLog('↺ Reset to 1.0x', 'ok');
@@ -642,6 +752,7 @@
             injectBtn.addEventListener('click', toggleInjection);
             stopBtn.addEventListener('click', stopInjection);
             resetBtn.addEventListener('click', resetSpeed);
+            openTabBtn.addEventListener('click', openNewTab);
 
             // ===== KEYBOARD: Q =====
 
@@ -655,32 +766,30 @@
             // ===== IFRAME LOAD =====
 
             iframe.addEventListener('load', function() {
-                addLog('📄 Iframe loaded: ss.randomkzn.com', 'info');
-                if (isInjected) {
-                    setTimeout(() => {
-                        injectSpeed(currentSpeed);
-                    }, 1000);
-                }
+                tryConnect();
             });
 
             // ===== INIT =====
 
             updateSpeedDisplay();
+            setConnected(false);
             addLog('🌱 SpeedHack ready. Press Q to toggle.', 'info');
-            addLog('📌 Set speed with slider, click INJECT or press Q', 'info');
+            addLog('📌 Click "OPEN IN NEW TAB" first, then inject.', 'info');
 
-            // Also inject automatically on first load after a delay
-            setTimeout(() => {
-                if (!isInjected) {
-                    addLog('💡 Click INJECT or press Q to activate', 'info');
+            // Try to connect after a moment
+            setTimeout(tryConnect, 1000);
+            setTimeout(tryConnect, 3000);
+
+            // Listen for messages from the iframe (if any)
+            window.addEventListener('message', function(e) {
+                if (e.origin && e.origin.includes('randomkzn')) {
+                    addLog('📩 Received message from iframe', 'info');
+                    setConnected(true);
                 }
-            }, 3000);
-
-            // ===== KEYBOARD SHORTCUT OVERLAY =====
+            });
 
             console.log('⚡ SpeedHack loaded');
-            console.log('📌 Press Q to toggle speed hack');
-            console.log('📌 Slider adjusts speed from 0.5x to 50x');
+            console.log('📌 Click "OPEN IN NEW TAB" then press Q to toggle speed hack');
 
         })();
     </script>
