@@ -36,7 +36,6 @@
             font-size: 18px;
             color: #3fd05a;
             font-weight: 900;
-            letter-spacing: 0.5px;
         }
         .topbar h1 span {
             color: #f6e05e;
@@ -79,7 +78,7 @@
 
         /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 240px;
+            width: 260px;
             background: #11111e;
             border-right: 1px solid #1a1a2e;
             padding: 16px;
@@ -112,6 +111,9 @@
         }
         .sidebar .info-box .ok {
             color: #3fd05a;
+        }
+        .sidebar .info-box .warn {
+            color: #f6ad55;
         }
 
         .sidebar .speed-control {
@@ -227,6 +229,20 @@
             border: 1px solid #2d3748;
             font-size: 11px;
         }
+        .sidebar .method-select {
+            background: #1a1a2e;
+            border: 1px solid #2d3748;
+            color: #a0aec0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: inherit;
+            width: 100%;
+            cursor: pointer;
+        }
+        .sidebar .method-select option {
+            background: #0a0a12;
+        }
 
         /* ===== IFRAME AREA ===== */
         .iframe-area {
@@ -255,6 +271,10 @@
             font-size: 14px;
             color: #4a5568;
             margin-top: 4px;
+        }
+        .iframe-area .placeholder .warn-text {
+            color: #f6ad55;
+            font-weight: 700;
         }
 
         .iframe-area iframe {
@@ -305,6 +325,9 @@
         .log .entry .info {
             color: #63b3ed;
         }
+        .log .entry .warn {
+            color: #f6ad55;
+        }
         .log.show {
             display: block;
         }
@@ -313,7 +336,7 @@
         @media (max-width: 700px) {
             .sidebar {
                 width: 100%;
-                max-height: 220px;
+                max-height: 240px;
                 border-right: none;
                 border-bottom: 1px solid #1a1a2e;
                 flex-shrink: 0;
@@ -365,8 +388,12 @@
             <div class="section-title">Control Panel</div>
 
             <div class="info-box" id="infoBox">
-                <div id="connectionStatus">🔴 <span class="err">Not connected</span></div>
-                <div style="margin-top:4px;font-size:11px;" id="connectionDetail">The site refused to connect.<br>Click <strong>OPEN IN NEW TAB</strong> below.</div>
+                <div id="connectionStatus">🔴 <span class="err">Blocked by CORS</span></div>
+                <div style="margin-top:4px;font-size:11px;" id="connectionDetail">
+                    <span class="warn">⚠️ The site blocks iframe embedding.</span><br>
+                    <strong>Solution:</strong> Use the <strong style="color:#3fd05a;">"OPEN IN NEW TAB"</strong> button below,
+                    then inject from there.
+                </div>
             </div>
 
             <div class="speed-control">
@@ -393,10 +420,11 @@
         <div class="iframe-area" id="iframeArea">
             <div class="placeholder" id="placeholder">
                 <div class="icon">🚫</div>
-                <h2>ss.randomkzn.com refused to connect</h2>
-                <p>The site does not allow embedding in iframes.</p>
+                <h2>Cannot embed ss.randomkzn.com</h2>
+                <p>The site has <span class="warn-text">CORS/X-Frame-Options</span> blocking iframes.</p>
                 <p style="margin-top:8px;font-size:13px;color:#4a5568;">
-                    Use the <strong style="color:#3fd05a;">"OPEN IN NEW TAB"</strong> button below.
+                    Click <strong style="color:#3fd05a;">"OPEN IN NEW TAB"</strong> below,
+                    <br>then press <strong style="color:#f6e05e;">Q</strong> to inject speed hack.
                 </p>
             </div>
             <iframe id="targetFrame" src="about:blank"></iframe>
@@ -412,7 +440,6 @@
 
             // ===== DOM REFS =====
             const iframe = document.getElementById('targetFrame');
-            const iframeArea = document.getElementById('iframeArea');
             const placeholder = document.getElementById('placeholder');
             const slider = document.getElementById('speedSlider');
             const speedDisplay = document.getElementById('speedDisplay');
@@ -422,7 +449,6 @@
             const openTabBtn = document.getElementById('openTabBtn');
             const statusText = document.getElementById('statusText');
             const logPanel = document.getElementById('logPanel');
-            const infoBox = document.getElementById('infoBox');
             const connectionStatus = document.getElementById('connectionStatus');
             const connectionDetail = document.getElementById('connectionDetail');
 
@@ -432,7 +458,7 @@
             let injectionInterval = null;
             let logEntries = [];
             let targetWindow = null;
-            let isConnected = false;
+            let targetTabId = null;
 
             // ===== LOG =====
             function addLog(msg, type = 'info') {
@@ -445,47 +471,31 @@
             function renderLog() {
                 let html = '';
                 logEntries.forEach(e => {
-                    const cls = e.type === 'ok' ? 'ok' : (e.type === 'err' ? 'err' : (e.type === 'info' ? 'info' :
-                    ''));
+                    const cls = e.type === 'ok' ? 'ok' : (e.type === 'err' ? 'err' : (e.type === 'warn' ? 'warn' :
+                        (e.type === 'info' ? 'info' : '')));
                     html += `<div class="entry"><span class="time">[${e.time}]</span> <span class="${cls}">${e.msg}</span></div>`;
                 });
                 logPanel.innerHTML = html;
                 logPanel.classList.add('show');
             }
 
-            // ===== CONNECTION STATUS =====
-            function setConnected(status) {
-                isConnected = status;
-                if (status) {
-                    connectionStatus.innerHTML = '🟢 <span class="ok">Connected</span>';
-                    connectionDetail.textContent = 'Tab is open and ready for injection.';
-                    placeholder.style.display = 'none';
-                    iframe.classList.add('show');
-                    addLog('✅ Connected to ss.randomkzn.com', 'ok');
-                } else {
-                    connectionStatus.innerHTML = '🔴 <span class="err">Not connected</span>';
-                    connectionDetail.innerHTML = 'The site refused to connect.<br>Click <strong>OPEN IN NEW TAB</strong> below.';
-                    placeholder.style.display = 'block';
-                    iframe.classList.remove('show');
-                    addLog('❌ Not connected - use "Open in New Tab"', 'err');
-                }
+            // ===== SET CONNECTION STATUS =====
+            function setBlocked() {
+                connectionStatus.innerHTML = '🔴 <span class="err">Blocked by CORS</span>';
+                connectionDetail.innerHTML = `
+                    <span class="warn">⚠️ The site blocks iframe embedding.</span><br>
+                    <strong>Solution:</strong> Use the <strong style="color:#3fd05a;">"OPEN IN NEW TAB"</strong> button below,
+                    then inject from there.
+                `;
+                placeholder.style.display = 'block';
+                iframe.classList.remove('show');
             }
 
-            // ===== TRY TO CONNECT =====
-            function tryConnect() {
-                try {
-                    // Try to access the iframe
-                    const win = iframe.contentWindow;
-                    if (win && win.location && win.location.href !== 'about:blank') {
-                        setConnected(true);
-                        targetWindow = win;
-                        return true;
-                    }
-                } catch (e) {
-                    // Cross-origin or not loaded
-                }
-                setConnected(false);
-                return false;
+            function setConnected() {
+                connectionStatus.innerHTML = '🟢 <span class="ok">Connected (New Tab)</span>';
+                connectionDetail.innerHTML = 'Tab is open and ready for injection.<br>Press <strong style="color:#f6e05e;">Q</strong> to inject.';
+                placeholder.style.display = 'none';
+                iframe.classList.remove('show');
             }
 
             // ===== OPEN IN NEW TAB =====
@@ -493,15 +503,17 @@
                 const url = 'https://ss.randomkzn.com/';
                 const newTab = window.open(url, '_blank');
                 if (newTab) {
-                    addLog('🔗 Opened ss.randomkzn.com in new tab', 'info');
                     targetWindow = newTab;
-                    setConnected(true);
+                    setConnected();
+                    addLog('🔗 Opened ss.randomkzn.com in new tab', 'info');
+                    addLog('📌 Press Q to inject speed hack into the new tab', 'info');
+
                     // Try to inject after a delay
                     setTimeout(() => {
                         if (isInjected) {
-                            injectSpeed(currentSpeed, newTab);
+                            injectSpeed(currentSpeed);
                         }
-                    }, 3000);
+                    }, 2000);
                 } else {
                     addLog('❌ Popup blocked. Allow popups for this site.', 'err');
                 }
@@ -622,23 +634,29 @@
 
             // ===== INJECT =====
 
-            function injectSpeed(speed, win) {
-                const target = win || targetWindow || iframe.contentWindow;
-                if (!target) {
-                    addLog('❌ No target window to inject into', 'err');
+            function injectSpeed(speed) {
+                const win = targetWindow;
+                if (!win) {
+                    addLog('❌ No target window. Open the site in a new tab first.', 'err');
                     return false;
                 }
 
                 try {
-                    const code = getSpeedCode(speed);
-                    const script = target.document.createElement('script');
+                    // Try to access the window
+                    const test = win.document;
+                    if (!test) throw new Error('Cannot access document');
+
+                    const code = getSpeedCode(speed || currentSpeed);
+                    const script = win.document.createElement('script');
                     script.textContent = code;
-                    target.document.documentElement.appendChild(script);
+                    win.document.documentElement.appendChild(script);
                     script.remove();
-                    addLog(`✅ Injected ${speed}x speed hack`, 'ok');
+
+                    addLog(`✅ Injected ${speed || currentSpeed}x speed hack into new tab`, 'ok');
                     return true;
                 } catch (e) {
                     addLog(`❌ Injection failed: ${e.message}`, 'err');
+                    addLog('💡 Make sure the new tab is still open and on ss.randomkzn.com', 'warn');
                     return false;
                 }
             }
@@ -654,8 +672,8 @@
             }
 
             function startInjection() {
-                if (!isConnected && !targetWindow) {
-                    addLog('❌ Not connected. Open the site in a new tab first.', 'err');
+                if (!targetWindow) {
+                    addLog('❌ No target window. Click "OPEN IN NEW TAB" first.', 'err');
                     return;
                 }
 
@@ -665,8 +683,7 @@
                     return;
                 }
 
-                const win = targetWindow || iframe.contentWindow;
-                const success = injectSpeed(speed, win);
+                const success = injectSpeed(speed);
                 if (success) {
                     isInjected = true;
                     currentSpeed = speed;
@@ -678,24 +695,27 @@
 
                     if (injectionInterval) clearInterval(injectionInterval);
                     injectionInterval = setInterval(() => {
-                        if (isInjected) {
+                        if (isInjected && targetWindow) {
                             try {
-                                const w = targetWindow || iframe.contentWindow;
-                                if (w && w.__speedHack && !w.__speedHack.isActive()) {
+                                if (targetWindow.__speedHack && !targetWindow.__speedHack.isActive()) {
                                     addLog('🔄 Re-injecting...', 'info');
-                                    injectSpeed(currentSpeed, w);
+                                    injectSpeed(currentSpeed);
                                 }
                             } catch (e) {
-                                addLog('🔄 Re-injecting after reload...', 'info');
-                                setTimeout(() => {
-                                    if (isInjected) {
-                                        const w2 = targetWindow || iframe.contentWindow;
-                                        injectSpeed(currentSpeed, w2);
-                                    }
-                                }, 500);
+                                // Tab might have been closed or reloaded
+                                addLog('⚠️ Target tab lost. Re-inject manually.', 'warn');
+                                if (injectionInterval) {
+                                    clearInterval(injectionInterval);
+                                    injectionInterval = null;
+                                }
+                                isInjected = false;
+                                statusText.textContent = 'INACTIVE';
+                                statusText.className = 'inactive';
+                                injectBtn.textContent = '⚡ INJECT';
+                                injectBtn.classList.remove('active');
                             }
                         }
-                    }, 3000);
+                    }, 5000);
                 }
             }
 
@@ -706,14 +726,15 @@
                     injectionInterval = null;
                 }
 
-                const win = targetWindow || iframe.contentWindow;
-                try {
-                    if (win && win.__speedHack) {
-                        win.__speedHack.stop();
-                        addLog('⏹ Speed hack stopped via API', 'ok');
+                if (targetWindow) {
+                    try {
+                        if (targetWindow.__speedHack) {
+                            targetWindow.__speedHack.stop();
+                            addLog('⏹ Speed hack stopped via API', 'ok');
+                        }
+                    } catch (e) {
+                        addLog('⏹ Speed hack stopped (tab may be closed)', 'info');
                     }
-                } catch (e) {
-                    addLog('⏹ Speed hack stopped (reload may be needed)', 'info');
                 }
 
                 statusText.textContent = 'INACTIVE';
@@ -726,9 +747,8 @@
             function resetSpeed() {
                 slider.value = '1.0';
                 updateSpeedDisplay();
-                if (isInjected) {
-                    const win = targetWindow || iframe.contentWindow;
-                    const success = injectSpeed(1.0, win);
+                if (isInjected && targetWindow) {
+                    const success = injectSpeed(1.0);
                     if (success) {
                         currentSpeed = 1.0;
                         addLog('↺ Reset to 1.0x', 'ok');
@@ -763,33 +783,16 @@
                 }
             });
 
-            // ===== IFRAME LOAD =====
-
-            iframe.addEventListener('load', function() {
-                tryConnect();
-            });
-
             // ===== INIT =====
 
             updateSpeedDisplay();
-            setConnected(false);
-            addLog('🌱 SpeedHack ready. Press Q to toggle.', 'info');
-            addLog('📌 Click "OPEN IN NEW TAB" first, then inject.', 'info');
+            setBlocked();
+            addLog('🌱 SpeedHack loaded', 'info');
+            addLog('📌 Click "OPEN IN NEW TAB" to bypass CORS', 'warn');
+            addLog('📌 Then press Q to inject speed hack', 'info');
 
-            // Try to connect after a moment
-            setTimeout(tryConnect, 1000);
-            setTimeout(tryConnect, 3000);
-
-            // Listen for messages from the iframe (if any)
-            window.addEventListener('message', function(e) {
-                if (e.origin && e.origin.includes('randomkzn')) {
-                    addLog('📩 Received message from iframe', 'info');
-                    setConnected(true);
-                }
-            });
-
-            console.log('⚡ SpeedHack loaded');
-            console.log('📌 Click "OPEN IN NEW TAB" then press Q to toggle speed hack');
+            console.log('⚡ SpeedHack loaded - CORS bypass mode');
+            console.log('📌 Click "OPEN IN NEW TAB" then press Q');
 
         })();
     </script>
